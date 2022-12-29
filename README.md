@@ -1,8 +1,8 @@
 ![Logo](/.readmeFiles/logos/HUA_Logo_Blue.png)
 
-# Divorce Srvice
+# Divorce Service
 
-Project for Distributed Systems class (5th sem). Professors: [Anargyros Tsadimas] (https://github.com/tsadimas), Mara Nikolaidou
+Project for Distributed Systems class (5th sem). Professors: [Anargyros Tsadimas](https://github.com/tsadimas), Mara Nikolaidou
 
 
 ## Team
