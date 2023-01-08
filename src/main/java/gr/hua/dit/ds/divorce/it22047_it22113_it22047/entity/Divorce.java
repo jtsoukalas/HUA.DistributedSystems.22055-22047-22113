@@ -3,7 +3,6 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +25,9 @@ public class Divorce implements Serializable {
     @Column(name="contract_details")
     private String contractDetails;
 
-
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "statement")
-    private List<Statement> statement;
+    private List<DivorceStatement> statement;
 
     @Column(name="notarial_act_number")
     private String notarialDeedNumber;
@@ -40,9 +38,67 @@ public class Divorce implements Serializable {
     @Column(name="application_timest")
     private Date applicationDate;
 
-    public List<Statement> getStatement() {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public DivorceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DivorceStatus status) {
+        this.status = status;
+    }
+
+    public User getLeadLawyer() {
+        return leadLawyer;
+    }
+
+    public void setLeadLawyer(User leadLawyer) {
+        this.leadLawyer = leadLawyer;
+    }
+
+    public String getContractDetails() {
+        return contractDetails;
+    }
+
+    public void setContractDetails(String contractDetails) {
+        this.contractDetails = contractDetails;
+    }
+
+    public List<DivorceStatement> getStatement() {
         return statement;
     }
 
+    public void setStatement(List<DivorceStatement> statement) {
+        this.statement = statement;
+    }
 
+    public String getNotarialDeedNumber() {
+        return notarialDeedNumber;
+    }
+
+    public void setNotarialDeedNumber(String notarialDeedNumber) {
+        this.notarialDeedNumber = notarialDeedNumber;
+    }
+
+    public Date getSubmitDate() {
+        return submitDate;
+    }
+
+    public void setSubmitDate(Date submitDate) {
+        this.submitDate = submitDate;
+    }
+
+    public Date getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(Date applicationDate) {
+        this.applicationDate = applicationDate;
+    }
 }
