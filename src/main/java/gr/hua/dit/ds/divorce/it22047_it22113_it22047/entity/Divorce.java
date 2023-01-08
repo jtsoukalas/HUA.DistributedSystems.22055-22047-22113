@@ -1,7 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
-import jakarta.persistence.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +37,19 @@ public class Divorce implements Serializable {
 
     @Column(name="application_timest")
     private Date applicationDate;
+
+    public Divorce(){}
+
+    public Divorce(String id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
+        this.id = id;
+        this.status = status;
+        this.leadLawyer = leadLawyer;
+        this.contractDetails = contractDetails;
+        this.statement = statement;
+        this.notarialDeedNumber = notarialDeedNumber;
+        this.submitDate = submitDate;
+        this.applicationDate = applicationDate;
+    }
 
     public String getId() {
         return id;

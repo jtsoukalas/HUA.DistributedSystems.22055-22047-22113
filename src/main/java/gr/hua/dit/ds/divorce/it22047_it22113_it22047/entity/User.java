@@ -1,7 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
-import jakarta.persistence.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +47,21 @@ public class User implements Serializable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "divorce_id")
     private List<Divorce> cases;
+
+    public User(){}
+    public User(String taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, List<Role> roles, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
+        this.taxNumber = taxNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.identityCardNumber = identityCardNumber;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.roles = roles;
+        this.userStatus = userStatus;
+        this.registerTimestamp = registerTimestamp;
+        this.cases = cases;
+    }
 
     public String getTaxNumber() {
         return taxNumber;
