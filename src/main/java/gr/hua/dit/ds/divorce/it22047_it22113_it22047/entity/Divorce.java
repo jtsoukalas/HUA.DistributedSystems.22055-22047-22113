@@ -7,38 +7,36 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name="divorce")
+@Table(name = "divorce")
 public class Divorce implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private String id;
 
-    @Column(name="status")
+    @Column(name = "status")
     private DivorceStatus status;
 
-    @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="lead_lawyer_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tax_number")
     private User leadLawyer;
 
-    @Column(name="contract_details")
+    @Column(name = "contract_details")
     private String contractDetails;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "statement")
+    @JoinColumn(name = "id")
     private List<DivorceStatement> statement;
 
-    @Column(name="notarial_act_number")
+    @Column(name = "notarial_act_number")
     private String notarialDeedNumber;
 
-    @Column(name="submit_date")
+    @Column(name = "submit_date")
     private Date submitDate;
 
-    @Column(name="application_timest")
+    @Column(name = "application_timest")
     private Date applicationDate;
-
-    public Divorce(){}
 
     public Divorce(String id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
         this.id = id;
@@ -50,6 +48,8 @@ public class Divorce implements Serializable {
         this.submitDate = submitDate;
         this.applicationDate = applicationDate;
     }
+
+    public Divorce() {}
 
     public String getId() {
         return id;
@@ -83,13 +83,9 @@ public class Divorce implements Serializable {
         this.contractDetails = contractDetails;
     }
 
-    public List<DivorceStatement> getStatement() {
-        return statement;
-    }
+    public List<DivorceStatement> getStatement() {return statement;}
 
-    public void setStatement(List<DivorceStatement> statement) {
-        this.statement = statement;
-    }
+    public void setStatement(List<DivorceStatement> statement) {this.statement = statement;}
 
     public String getNotarialDeedNumber() {
         return notarialDeedNumber;
