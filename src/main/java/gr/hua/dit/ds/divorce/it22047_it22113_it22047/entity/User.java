@@ -14,7 +14,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="tax_number")
-    private Integer taxNumber;
+    private String taxNumber;
 
     @Column(name="first_name")
     private String firstName;
@@ -51,7 +51,7 @@ public class User implements Serializable {
     @JoinColumn(name = "divorce_id")
     private List<Divorce> cases;
 
-    public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
+    public User(String taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
         this.taxNumber = taxNumber;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -67,9 +67,9 @@ public class User implements Serializable {
 
     public User() {}
 
-    public Integer getTaxNumber() {return taxNumber;}
+    public String getTaxNumber() {return taxNumber;}
 
-    public void setTaxNumber(Integer taxNumber) {this.taxNumber = taxNumber;}
+    public void setTaxNumber(String taxNumber) {this.taxNumber = taxNumber;}
 
     public String getFirstName() {
         return firstName;

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
 
@@ -18,6 +19,7 @@ public class DivorceDAOImp implements DivorceDAO {
     private EntityManager entityManager;
 
     @Override
+    @Transactional
     public List<Divorce> findAll() {
         Session session = entityManager.unwrap(Session.class);
         Query query = session.createQuery("from Divorce", Divorce.class);
@@ -26,12 +28,14 @@ public class DivorceDAOImp implements DivorceDAO {
     }
 
     @Override
+    @Transactional
     public void save(Divorce divorce) {
-        Divorce acourse = entityManager.merge(divorce);
+        Divorce adivorce = entityManager.merge(divorce);
     }
 
     @Override
-    public Divorce findById(String id) {
+    @Transactional
+    public Divorce findById(int id) {
         return entityManager.find(Divorce.class, id);
     }
 }
