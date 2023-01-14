@@ -1,6 +1,8 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao;
 
-import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.*;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 @Repository

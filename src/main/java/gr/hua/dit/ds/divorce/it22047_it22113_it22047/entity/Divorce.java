@@ -13,7 +13,7 @@ public class Divorce implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private String id;
 
     @Column(name = "status")
     private DivorceStatus status;
@@ -38,7 +38,7 @@ public class Divorce implements Serializable {
     @Column(name = "application_timest")
     private Date applicationDate;
 
-    public Divorce(int id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
+    public Divorce(String id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
         this.id = id;
         this.status = status;
         this.leadLawyer = leadLawyer;
@@ -51,11 +51,11 @@ public class Divorce implements Serializable {
 
     public Divorce() {}
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

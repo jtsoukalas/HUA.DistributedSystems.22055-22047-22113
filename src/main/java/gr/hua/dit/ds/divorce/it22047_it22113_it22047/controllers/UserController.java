@@ -4,11 +4,14 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.UserDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Statement;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -20,11 +23,14 @@ public class UserController{
     @Autowired
     private UserDAO userDAO;
 
+    @Autowired
+    private UserRepository userRepo;
+
     @GetMapping("/find/{taxNumber}")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public User findByTaxNumber(@PathVariable String taxNumber){
-        //        fixme
-        //        Code here
-        return null;
+       System.out.println("taxNumber: " + taxNumber);
+        return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
     }
 
     @PostMapping("/invite/{taxNumber}/{email}")

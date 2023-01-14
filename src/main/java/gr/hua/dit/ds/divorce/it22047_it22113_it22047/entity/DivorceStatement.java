@@ -17,12 +17,14 @@ public class DivorceStatement implements Serializable {
     @JoinColumn(name="person_id")
     private User person;
 
+    // todo convert String to Enum
     @Column(name="faculty")
     private String faculty;
 
     @Column(name="comment")
     private String comment;
 
+    // todo convert String to Boolean for Agreement
     @Column(name="agreement")
     private String agreement;
 
