@@ -15,5 +15,7 @@ VALUES ('1', 123456);
 INSERT INTO public."divorceStatement" (id, agreement, comment, faculty, timestamp, person_id)
 VALUES (1, 'true', 'blah blah', 'Spouse', '2023-01-13 20:38:13.000000', 123456);
 
+INSERT INTO public.divorce_statement ("Divorce_id", statement_id)
+VALUES (1, 1);
 
 
