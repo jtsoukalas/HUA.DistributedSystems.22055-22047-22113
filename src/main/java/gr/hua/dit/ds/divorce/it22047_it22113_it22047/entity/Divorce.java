@@ -27,9 +27,9 @@ public class Divorce implements Serializable {
     @Column(name = "contract_details")
     private String contractDetails;
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "divorceStatement_id")
-//    private List<DivorceStatement> statement;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "divorceStatement_id")
+    private List<DivorceStatement> statement;
 
     @Column(name = "notarial_act_number")
     private String notarialDeedNumber;
@@ -58,13 +58,13 @@ public class Divorce implements Serializable {
     public Divorce() {
     }
 
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public DivorceStatus getStatus() {
         return status;
@@ -90,18 +90,21 @@ public class Divorce implements Serializable {
         this.contractDetails = contractDetails;
     }
 
-//    public List<DivorceStatement> getStatement() {return statement;}
-//
-//    public void setStatement(List<DivorceStatement> statement) {this.statement = statement;}
+    public List<DivorceStatement> getStatement() {
+        return statement;
+    }
 
+    public void setStatement(List<DivorceStatement> statement) {
+        this.statement = statement;
+    }
 
-//    public List<DivorceStatement> getStatement() {
-//        return statement;
-//    }
+    public List<User> getUsers() {
+        return users;
+    }
 
-//    public void setStatement(List<DivorceStatement> statement) {
-//        this.statement = statement;
-//    }
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
 
     public String getNotarialDeedNumber() {
         return notarialDeedNumber;

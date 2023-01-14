@@ -30,9 +30,9 @@ public class DivorceStatement implements Serializable {
     @Column(name="timestamp")
     private Date timestamp;
 
-//    @JoinColumn(name = "divorce_id")
-//    private Integer divorce_id;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "divorce_id")
+    private Divorce divorce;
 
 //    public String getDivorceId() {
 //        return divorceId;
