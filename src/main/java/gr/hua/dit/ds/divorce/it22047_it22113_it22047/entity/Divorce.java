@@ -1,6 +1,8 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -13,21 +15,21 @@ public class Divorce implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private String id;
+    private Integer id;
 
     @Column(name = "status")
     private DivorceStatus status;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tax_number")
+    @JoinColumn(name = "lead_lawyer_id")
     private User leadLawyer;
 
     @Column(name = "contract_details")
     private String contractDetails;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private List<DivorceStatement> statement;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "divorceStatement_id")
+//    private List<DivorceStatement> statement;
 
     @Column(name = "notarial_act_number")
     private String notarialDeedNumber;
@@ -38,26 +40,31 @@ public class Divorce implements Serializable {
     @Column(name = "application_timest")
     private Date applicationDate;
 
-    public Divorce(String id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
-        this.id = id;
-        this.status = status;
-        this.leadLawyer = leadLawyer;
-        this.contractDetails = contractDetails;
-        this.statement = statement;
-        this.notarialDeedNumber = notarialDeedNumber;
-        this.submitDate = submitDate;
-        this.applicationDate = applicationDate;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_tax_number") //fixme
+    private List<User> users;
+
+//    public Divorce(String id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
+//        this.id = id;
+//        this.status = status;
+//        this.leadLawyer = leadLawyer;
+//        this.contractDetails = contractDetails;
+//        this.statement = statement;
+//        this.notarialDeedNumber = notarialDeedNumber;
+//        this.submitDate = submitDate;
+//        this.applicationDate = applicationDate;
+//    }
+
+    public Divorce() {
     }
 
-    public Divorce() {}
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+//    public String getId() {
+//        return id;
+//    }
+//
+//    public void setId(String id) {
+//        this.id = id;
+//    }
 
     public DivorceStatus getStatus() {
         return status;
@@ -83,9 +90,18 @@ public class Divorce implements Serializable {
         this.contractDetails = contractDetails;
     }
 
-    public List<DivorceStatement> getStatement() {return statement;}
+//    public List<DivorceStatement> getStatement() {return statement;}
+//
+//    public void setStatement(List<DivorceStatement> statement) {this.statement = statement;}
 
-    public void setStatement(List<DivorceStatement> statement) {this.statement = statement;}
+
+//    public List<DivorceStatement> getStatement() {
+//        return statement;
+//    }
+
+//    public void setStatement(List<DivorceStatement> statement) {
+//        this.statement = statement;
+//    }
 
     public String getNotarialDeedNumber() {
         return notarialDeedNumber;

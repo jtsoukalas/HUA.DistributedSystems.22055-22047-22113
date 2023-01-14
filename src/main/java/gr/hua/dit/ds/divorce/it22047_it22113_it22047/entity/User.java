@@ -1,11 +1,12 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -14,7 +15,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="tax_number")
-    private String taxNumber;
+    private Integer taxNumber;
 
     @Column(name="first_name")
     private String firstName;
@@ -38,7 +39,7 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name="user_roles")
     @Column(name="roles")
-    private Collection<Role> interests;
+    private Collection<Role> roles;
 
     @Column(name="user_status")
     private UserStatus userStatus;
@@ -47,11 +48,12 @@ public class User implements Serializable {
     private Date registerTimestamp;
 
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "divorce_id")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "divorce_id") //fixme
+    @JsonBackReference
     private List<Divorce> cases;
 
-    public User(String taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
+    public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
         this.taxNumber = taxNumber;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -59,7 +61,7 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.interests = interests;
+        this.roles = interests;
         this.userStatus = userStatus;
         this.registerTimestamp = registerTimestamp;
         this.cases = cases;
@@ -67,9 +69,9 @@ public class User implements Serializable {
 
     public User() {}
 
-    public String getTaxNumber() {return taxNumber;}
+    public Integer getTaxNumber() {return taxNumber;}
 
-    public void setTaxNumber(String taxNumber) {this.taxNumber = taxNumber;}
+    public void setTaxNumber(Integer taxNumber) {this.taxNumber = taxNumber;}
 
     public String getFirstName() {
         return firstName;
@@ -119,9 +121,9 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Collection<Role> getInterests() {return interests;}
+    public Collection<Role> getRoles() {return roles;}
 
-    public void setInterests(Collection<Role> interests) {this.interests = interests;}
+    public void setRoles(Collection<Role> roles) {this.roles = roles;}
 
     public UserStatus getUserStatus() {
         return userStatus;

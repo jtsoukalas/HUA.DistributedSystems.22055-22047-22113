@@ -28,8 +28,7 @@ public class UserController{
 
     @GetMapping("/find/{taxNumber}")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public User findByTaxNumber(@PathVariable String taxNumber){
-       System.out.println("taxNumber: " + taxNumber);
+    public User findByTaxNumber(@PathVariable Integer taxNumber){
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
     }
 

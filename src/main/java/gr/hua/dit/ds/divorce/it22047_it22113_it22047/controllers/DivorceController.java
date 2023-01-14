@@ -31,9 +31,8 @@ public class DivorceController{
 
     @GetMapping("/find/{taxNumber}")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public List<Divorce> findByTaxNumber(@PathVariable String taxNumber){
+    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
         return divorceDAO.findByTaxNumber(taxNumber);
-//        return "There is no problem here!: " + taxNumber;
     }
 
     @PostMapping("/save/{divorce}")
@@ -47,6 +46,12 @@ public class DivorceController{
         //        fixme
         //        Code here
         return null;
+    }
+
+    @GetMapping("/findall")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Divorce> findAll(){
+        return divorceDAO.findAll();
     }
 
 

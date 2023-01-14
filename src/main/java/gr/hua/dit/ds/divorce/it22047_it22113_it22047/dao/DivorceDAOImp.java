@@ -13,6 +13,7 @@ import org.hibernate.Session;
 import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +37,8 @@ public class DivorceDAOImp implements DivorceDAO {
     private EntityManager entityManager;
     @Autowired
     private DivorceStatementRepository divorceStatementRepo;
+    @Autowired
+    private UserRepository userRepo;
 
     @Override
     @Transactional
@@ -60,34 +63,9 @@ public class DivorceDAOImp implements DivorceDAO {
 
     @Override
     @Transactional
-    public List<Divorce> findByTaxNumber(String taxNumber) {
-        Session session = entityManager.unwrap(Session.class);
-//        Find all the statements with this tax number
-//        Query query = session.createQuery("from DivorceStatement where person_id = :taxNumber", DivorceStatement.class);
-//        query.setParameter("taxNumber", taxNumber);
-
-        List<DivorceStatement> statements = divorceStatementRepo.findById(taxNumber).orElse(null);
-//        statements.forEach(()->{
-//            Logger.getLogger().error(statements.toString());
-//        });
-        if (statements.isEmpty()) {
-            throw new NoSuchElementException("No statements found for this tax number");
-        }
-
-        Logger LOGGER= (Logger) LoggerFactory.getLogger(DivorceApplication.class);
-
-
-
-            LOGGER.info("S with inputs {}, {} and {}");
-
-//        save queryStatements in a list
-//        List<DivorceStatement> statements = queryStatements.getResultList();
-//        take all the divorce ids from the statements and save them in a list
-        List<String> divorceIds = statements.stream().map(DivorceStatement::getId).toList();
-        divorceIds.stream().distinct();
-        List<Divorce> divorces = divorceIds.stream().map(id -> findById(id)).toList();
-
-        return divorces;
+    public List<Divorce> findByTaxNumber(Integer taxNumber) {
+        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
+                .getCases();
     }
 }
 
