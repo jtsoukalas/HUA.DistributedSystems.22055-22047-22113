@@ -24,8 +24,11 @@ public class DivorceStatement implements Serializable {
     @Column(name="comment")
     private String comment;
 
-    @Column(name="agreement")
-    private String agreement;
+
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name="statement_status")
+    @Column(name="choice")
+    private DivorceStatementStatus choice;
 
     @Column(name="timestamp")
     private Date timestamp;
@@ -34,32 +37,26 @@ public class DivorceStatement implements Serializable {
     @JoinColumn(name = "divorce_id")
     private Divorce divorce;
 
-//    public String getDivorceId() {
-//        return divorceId;
-//    }
-//
-//    public void setDivorceId(String divorceId) {
-//        this.divorceId = divorceId;
-//    }
+
 
 
     public DivorceStatement(){}
-//    public DivorceStatement(Integer id, User person, String faculty, String comment, String agreement, Date timestamp) {
-//        this.id = id;
-//        this.person = person;
-//        this.faculty = faculty;
-//        this.comment = comment;
-//        this.agreement = agreement;
-//        this.timestamp = timestamp;
-//    }
-//
-//    public Integer getId() {
-//        return id;
-//    }
-//
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
+    public DivorceStatement(Integer id, User person, String faculty, String comment, DivorceStatementStatus choice, Date timestamp) {
+        this.id = id;
+        this.person = person;
+        this.faculty = faculty;
+        this.comment = comment;
+        this.choice = choice;
+        this.timestamp = timestamp;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public User getPerson() {
         return person;
@@ -85,12 +82,12 @@ public class DivorceStatement implements Serializable {
         this.comment = comment;
     }
 
-    public String getAgreement() {
-        return agreement;
+    public DivorceStatementStatus getChoice() {
+        return choice;
     }
 
-    public void setAgreement(String agreement) {
-        this.agreement = agreement;
+    public void setChoice(DivorceStatementStatus agreement) {
+        this.choice = agreement;
     }
 
     public Date getTimestamp() {

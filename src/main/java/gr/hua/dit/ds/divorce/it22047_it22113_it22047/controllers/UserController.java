@@ -6,7 +6,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Statement;
@@ -27,7 +27,7 @@ public class UserController{
     private UserRepository userRepo;
 
     @GetMapping("/find/{taxNumber}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public User findByTaxNumber(@PathVariable Integer taxNumber){
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
     }
@@ -37,5 +37,10 @@ public class UserController{
         //        fixme
         //        Code here
         return null;
+    }
+
+    @PostMapping("/save")
+    public User save(@RequestBody User user){
+        return userRepo.save(user);
     }
 }

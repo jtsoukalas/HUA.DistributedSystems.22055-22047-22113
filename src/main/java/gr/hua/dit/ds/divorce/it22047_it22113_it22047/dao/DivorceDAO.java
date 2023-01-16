@@ -11,5 +11,5 @@ public interface DivorceDAO {
     public List<Divorce> findAll();
     public void save(Divorce divorce);
     public Divorce findById(String id);
-    public List<Divorce> findByTaxNumber(Integer taxNumber) throws NoSuchElementException;
+//    public List<Divorce> findByTaxNumber(Integer taxNumber) throws NoSuchElementException;
 }

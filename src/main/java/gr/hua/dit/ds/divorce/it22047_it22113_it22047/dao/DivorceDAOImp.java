@@ -14,7 +14,7 @@ import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -61,12 +61,7 @@ public class DivorceDAOImp implements DivorceDAO {
         return entityManager.find(Divorce.class, id);
     }
 
-    @Override
-    @Transactional
-    public List<Divorce> findByTaxNumber(Integer taxNumber) {
-        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
-                .getCases();
-    }
+
 }
 
 

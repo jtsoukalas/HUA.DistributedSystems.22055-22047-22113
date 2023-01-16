@@ -6,7 +6,8 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceReposit
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStatementRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Statement;
@@ -29,11 +30,12 @@ public class DivorceController{
     @Autowired
     DivorceDAO divorceDAO;
 
-    @GetMapping("/find/{taxNumber}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
-        return divorceDAO.findByTaxNumber(taxNumber);
-    }
+//    @GetMapping("/find/{taxNumber}")
+////    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+//    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
+//        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
+//                .getCases();
+//    }
 
     @PostMapping("/save/{divorce}")
     public Divorce save(@PathVariable Divorce divorce){
@@ -49,7 +51,7 @@ public class DivorceController{
     }
 
     @GetMapping("/findall")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public List<Divorce> findAll(){
         return divorceDAO.findAll();
     }
