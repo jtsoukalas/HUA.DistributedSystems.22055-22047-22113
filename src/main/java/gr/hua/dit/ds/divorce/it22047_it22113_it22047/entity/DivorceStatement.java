@@ -18,12 +18,12 @@ public class DivorceStatement implements Serializable {
     @JoinColumn(name="person_id")
     private User person;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="faculty")
-    private String faculty;
+    private Faculty faculty;
 
     @Column(name="comment")
     private String comment;
-
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name="statement_status")
@@ -38,16 +38,16 @@ public class DivorceStatement implements Serializable {
     private Divorce divorce;
 
 
-
-
     public DivorceStatement(){}
-    public DivorceStatement(Integer id, User person, String faculty, String comment, DivorceStatementStatus choice, Date timestamp) {
+
+    public DivorceStatement(Integer id, User person, Faculty faculty, String comment, DivorceStatementStatus choice, Date timestamp, Divorce divorce) {
         this.id = id;
         this.person = person;
         this.faculty = faculty;
         this.comment = comment;
         this.choice = choice;
         this.timestamp = timestamp;
+        this.divorce = divorce;
     }
 
     public Integer getId() {
@@ -66,13 +66,9 @@ public class DivorceStatement implements Serializable {
         this.person = person;
     }
 
-    public String getFaculty() {
-        return faculty;
-    }
+    public Faculty getFaculty() {return faculty;}
 
-    public void setFaculty(String faculty) {
-        this.faculty = faculty;
-    }
+    public void setFaculty(Faculty faculty) {this.faculty = faculty;}
 
     public String getComment() {
         return comment;

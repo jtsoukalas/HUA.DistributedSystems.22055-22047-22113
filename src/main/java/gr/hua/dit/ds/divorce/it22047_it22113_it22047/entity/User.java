@@ -47,9 +47,8 @@ public class User implements Serializable {
     @Column(name="register_timestamp")
     private Date registerTimestamp;
 
-
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "divorce_id") //fixme
+    @JoinColumn(name = "divorce_id")
     @JsonBackReference
     private List<Divorce> cases;
 

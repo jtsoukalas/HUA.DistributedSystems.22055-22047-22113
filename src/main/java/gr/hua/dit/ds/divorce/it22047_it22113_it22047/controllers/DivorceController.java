@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Statement;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -30,12 +31,14 @@ public class DivorceController{
     @Autowired
     DivorceDAO divorceDAO;
 
-//    @GetMapping("/find/{taxNumber}")
-////    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-//    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
+    @GetMapping("/find/{taxNumber}")
+//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
 //        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
-//                .getCases();
-//    }
+//                .getCases();  //fixme security
+        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
+                .getCases();
+    }
 
     @PostMapping("/save/{divorce}")
     public Divorce save(@PathVariable Divorce divorce){

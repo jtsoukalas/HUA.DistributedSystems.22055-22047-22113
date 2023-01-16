@@ -17,6 +17,7 @@ public class Divorce implements Serializable {
     @Column(name = "id")
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private DivorceStatus status;
 
@@ -44,16 +45,16 @@ public class Divorce implements Serializable {
     @JoinColumn(name = "user_tax_number") //fixme
     private List<User> users;
 
-//    public Divorce(String id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
-//        this.id = id;
-//        this.status = status;
-//        this.leadLawyer = leadLawyer;
-//        this.contractDetails = contractDetails;
-//        this.statement = statement;
-//        this.notarialDeedNumber = notarialDeedNumber;
-//        this.submitDate = submitDate;
-//        this.applicationDate = applicationDate;
-//    }
+    public Divorce(Integer id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
+        this.id = id;
+        this.status = status;
+        this.leadLawyer = leadLawyer;
+        this.contractDetails = contractDetails;
+        this.statement = statement;
+        this.notarialDeedNumber = notarialDeedNumber;
+        this.submitDate = submitDate;
+        this.applicationDate = applicationDate;
+    }
 
     public Divorce() {
     }
@@ -90,9 +91,7 @@ public class Divorce implements Serializable {
         this.contractDetails = contractDetails;
     }
 
-    public List<DivorceStatement> getStatement() {
-        return statement;
-    }
+    public List<DivorceStatement> getStatement() {return statement;}
 
     public void setStatement(List<DivorceStatement> statement) {
         this.statement = statement;

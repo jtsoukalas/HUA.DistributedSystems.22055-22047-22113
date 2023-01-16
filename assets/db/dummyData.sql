@@ -13,7 +13,7 @@ INSERT INTO public.divorce_users ("Divorce_id", users_tax_number)
 VALUES ('1', 123456);
 
 INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, person_id)
-VALUES (1, null, 'blah blah', 'Spouse', '2023-01-13 20:38:13.000000', 123456);
+VALUES (1, 'ACCEPT', 'blah blah', 'SPOUSE', '2023-01-13 20:38:13.000000', 123456);
 
 INSERT INTO public.divorce_statement ("Divorce_id", statement_id)
 VALUES (1, 1);
