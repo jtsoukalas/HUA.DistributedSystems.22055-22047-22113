@@ -2,6 +2,8 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatement;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStatementRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
@@ -28,11 +30,7 @@ public class DivorceController{
     @Autowired
     DivorceStatementRepository divorceStatementRepo;
 
-    @Autowired
-    DivorceDAO divorceDAO;
-
     @GetMapping("/find/{taxNumber}")
-//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
 //        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
 //                .getCases();  //fixme security
@@ -40,23 +38,27 @@ public class DivorceController{
                 .getCases();
     }
 
-    @PostMapping("/save/{divorce}")
-    public Divorce save(@PathVariable Divorce divorce){
-
-        return null;
+    @PostMapping("/save/")
+    public Divorce save(@RequestBody Divorce divorce){
+        return divorceRepo.save(divorce);
     }
 
-    @PostMapping("/statement/add/{divorceID}/{statment}")
-    public Divorce save(@PathVariable Divorce divorce, @PathVariable Statement statement){
-        //        fixme
-        //        Code here
-        return null;
+    @PostMapping("/statements/add/{divorceID}")
+    public Divorce addStatement(@PathVariable Integer divorceID, @RequestBody DivorceStatement statement){
+
+        //find divorce
+        Divorce divorce = divorceRepo.findById(divorceID).orElseThrow(() -> new NoSuchElementException("Divorce with id " + divorceID + " not found"));
+        //add statement to divorce
+//        divorce.getStatement().add(statement);
+        divorceStatementRepo.save(statement);
+//        divorceRepo.save(divorce);
+
+        return divorce;
     }
 
     @GetMapping("/findall")
-//    @PreAuthorize("hasRole('ADMIN')")
     public List<Divorce> findAll(){
-        return divorceDAO.findAll();
+        return divorceRepo.findAll();
     }
 
 

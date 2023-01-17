@@ -33,7 +33,7 @@ public class DivorceStatement implements Serializable {
     @Column(name="timestamp")
     private Date timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "divorce_id")
     private Divorce divorce;
 

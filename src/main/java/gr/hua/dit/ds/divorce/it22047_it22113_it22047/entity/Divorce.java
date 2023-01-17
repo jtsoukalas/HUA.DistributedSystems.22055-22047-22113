@@ -28,7 +28,7 @@ public class Divorce implements Serializable {
     @Column(name = "contract_details")
     private String contractDetails;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "divorceStatement_id")
     private List<DivorceStatement> statement;
 
@@ -41,7 +41,7 @@ public class Divorce implements Serializable {
     @Column(name = "application_timest")
     private Date applicationDate;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "user_tax_number") //fixme
     private List<User> users;
 
@@ -97,6 +97,9 @@ public class Divorce implements Serializable {
         this.statement = statement;
     }
 
+//    public DivorceStatement getStatement(List<DivorceStatement> divorceStatements, Integer id) {
+//        return divorceStatements.get(id);
+//    }
     public List<User> getUsers() {
         return users;
     }

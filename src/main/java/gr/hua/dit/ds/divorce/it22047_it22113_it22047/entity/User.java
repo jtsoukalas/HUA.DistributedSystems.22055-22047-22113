@@ -13,7 +13,7 @@ import java.util.List;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+//    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="tax_number")
     private Integer taxNumber;
 
@@ -47,7 +47,7 @@ public class User implements Serializable {
     @Column(name="register_timestamp")
     private Date registerTimestamp;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "divorce_id")
     @JsonBackReference
     private List<Divorce> cases;

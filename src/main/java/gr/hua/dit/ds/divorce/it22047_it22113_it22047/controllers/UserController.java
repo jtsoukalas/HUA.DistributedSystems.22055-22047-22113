@@ -31,6 +31,11 @@ public class UserController{
     public User findByTaxNumber(@PathVariable Integer taxNumber){
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
     }
+    @GetMapping("/findAll")
+//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public List<User> findAll(){
+        return userRepo.findAll();
+    }
 
     @PostMapping("/invite/{taxNumber}/{email}")
     public Divorce invite(@PathVariable String taxNumber, @PathVariable String email){
@@ -42,5 +47,15 @@ public class UserController{
     @PostMapping("/save")
     public User save(@RequestBody User user){
         return userRepo.save(user);
+    }
+
+//    @Autowired
+//    UserDAO userDAO;
+    @DeleteMapping("/delete/{taxNumber}")
+    public String deleteByTaxNumber(@PathVariable Integer taxNumber){
+        //fixme change from DAO to repository
+        userRepo.deleteByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
+//        userDAO.delete(taxNumber);
+        return "User with tax number " + taxNumber + " deleted";
     }
 }
