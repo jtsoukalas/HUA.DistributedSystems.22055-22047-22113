@@ -13,7 +13,7 @@ import java.util.List;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+//    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="tax_number")
     private Integer taxNumber;
 
@@ -48,9 +48,16 @@ public class User implements Serializable {
     private Date registerTimestamp;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "divorce_id")
+    @JoinTable(
+            name = "user_divorce",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "divorce_id"))
     @JsonBackReference
-    private List<Divorce> cases;
+    private List<Divorce> divorces;
+
+//    @OneToMany(mappedBy = "id",fetch = FetchType.LAZY)
+//    @JsonBackReference
+//    private List<Divorce> cases;
 
     public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
         this.taxNumber = taxNumber;
@@ -63,7 +70,7 @@ public class User implements Serializable {
         this.roles = interests;
         this.userStatus = userStatus;
         this.registerTimestamp = registerTimestamp;
-        this.cases = cases;
+        this.divorces = divorces;
     }
 
     public User() {}
@@ -140,11 +147,11 @@ public class User implements Serializable {
         this.registerTimestamp = registerTimestamp;
     }
 
-    public List<Divorce> getCases() {
-        return cases;
+    public List<Divorce> getDivorces() {
+        return divorces;
     }
 
-    public void setCases(List<Divorce> cases) {
-        this.cases = cases;
+    public void setDivorces(List<Divorce> divorces) {
+        this.divorces = divorces;
     }
 }

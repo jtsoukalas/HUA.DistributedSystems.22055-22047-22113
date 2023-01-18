@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController{
     @Autowired
     private DivorceDAO divorceDAO;
@@ -28,6 +28,11 @@ public class UserController{
 
     @GetMapping("/find/{taxNumber}")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    //1. todo check if taxNumber of auth user is the same as the one in the statement (person)
+
+    //2. todo check if taxNumber of the User who submits the statement is included in the divorce and the faculty is the same with the role ( lawyers given taxNumbers)
+
+    //3. todo check divorce status (if it is in the right stage)
     public User findByTaxNumber(@PathVariable Integer taxNumber){
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
     }
@@ -40,7 +45,25 @@ public class UserController{
     }
 
     @PostMapping("/save")
+//    @PreAuthorize("hasRole('LAWYER')")
     public User save(@RequestBody User user){
+        // 1. todo check if taxNumber of auth user is the same as the lead lawyer of the divorce
+
+        //2. todo check divorce status (if it is in the right stage)
         return userRepo.save(user);
+    }
+
+    @GetMapping("/findall")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public List<User> findAll(){
+        return userRepo.findAll();
+//                .orElseThrow(NoSuchElementException::new);
+    }
+
+
+    @DeleteMapping("/delete/{taxNumber}")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(@PathVariable Integer taxNumber){
+        userRepo.delete(userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new));
     }
 }

@@ -33,30 +33,41 @@ public class DivorceController{
 
     @GetMapping("/find/{taxNumber}")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    //1. todo check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
+
     public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
 //        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
 //                .getCases();  //fixme security
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
-                .getCases();
+                .getDivorces();
     }
 
-    @PostMapping("/save/{divorce}")
-    public Divorce save(@PathVariable Divorce divorce){
+    @PostMapping("/save")
+    public Divorce save(@RequestBody Divorce divorce){
+        //1. todo check if taxNumber of auth user is the same as the one in the lead lawyer
 
-        return null;
+        //3. todo check divorce status (if it is in the right stage)
+        return divorceRepo.save(divorce);
+
     }
 
-    @PostMapping("/statement/add/{divorceID}/{statment}")
-    public Divorce save(@PathVariable Divorce divorce, @PathVariable Statement statement){
-        //        fixme
-        //        Code here
+    @PostMapping("/{divorceID}/statements/add/")
+    public Divorce addStatement(@PathVariable Integer divorceID, @RequestBody Statement statement){
+        //1. todo check if taxNumber of auth user is the same as the one in the statement (person)
+
+        //2. todo check if taxNumber of the User who submits the statement is included in the divorce and the faculty is the same with the role ( lawyers given taxNumbers)
+
+        //3. todo check divorce status (if it is in the right stage)
+
+
         return null;
     }
 
     @GetMapping("/findall")
+    //Only admin can see all users
 //    @PreAuthorize("hasRole('ADMIN')")
     public List<Divorce> findAll(){
-        return divorceDAO.findAll();
+        return divorceRepo.findAll();
     }
 
 
