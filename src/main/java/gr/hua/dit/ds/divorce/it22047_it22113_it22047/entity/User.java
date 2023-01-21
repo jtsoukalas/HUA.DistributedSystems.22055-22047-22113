@@ -47,6 +47,7 @@ public class User implements Serializable {
     @Column(name="register_timestamp")
     private Date registerTimestamp;
 
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_divorce",
@@ -55,9 +56,6 @@ public class User implements Serializable {
     @JsonBackReference
     private List<Divorce> divorces;
 
-//    @OneToMany(mappedBy = "id",fetch = FetchType.LAZY)
-//    @JsonBackReference
-//    private List<Divorce> cases;
 
     public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
         this.taxNumber = taxNumber;
@@ -154,4 +152,6 @@ public class User implements Serializable {
     public void setDivorces(List<Divorce> divorces) {
         this.divorces = divorces;
     }
+
+
 }

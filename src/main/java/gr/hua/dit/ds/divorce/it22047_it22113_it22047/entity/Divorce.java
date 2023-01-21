@@ -28,6 +28,7 @@ public class Divorce implements Serializable {
     @Column(name = "contract_details")
     private String contractDetails;
 
+
 //    cascade={CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.REMOVE,CascadeType.DETACH}
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "divorceStatement_id")
@@ -42,12 +43,6 @@ public class Divorce implements Serializable {
     @Column(name = "application_timest")
     private Date applicationDate;
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "divorce_user",
-//            joinColumns = @JoinColumn(name = "divorce_id"),
-//            inverseJoinColumns = @JoinColumn(name = "user_id"))
-//    private List<User> users;
 
     public Divorce(Integer id, DivorceStatus status, User leadLawyer, String contractDetails, List<DivorceStatement> statement, String notarialDeedNumber, Date submitDate, Date applicationDate) {
         this.id = id;
@@ -100,14 +95,6 @@ public class Divorce implements Serializable {
     public void setStatement(List<DivorceStatement> statement) {
         this.statement = statement;
     }
-
-//    public List<User> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(List<User> users) {
-//        this.users = users;
-//    }
 
     public String getNotarialDeedNumber() {
         return notarialDeedNumber;

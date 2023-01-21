@@ -2,6 +2,8 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatement;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStatementRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
@@ -31,16 +33,22 @@ public class DivorceController{
     @Autowired
     DivorceDAO divorceDAO;
 
-    @GetMapping("/find/{taxNumber}")
+    @GetMapping("/findall")
+    public List<Divorce> findAll(){
+        return divorceRepo.findAll();
+    }
+
+    @GetMapping("/find")
+    public List<Divorce> findByTaxNumber(Integer taxNumber){
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     //1. todo check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
 
-    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
 //        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
 //                .getCases();  //fixme security
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
                 .getDivorces();
     }
+
 
     @PostMapping("/save")
     public Divorce save(@RequestBody Divorce divorce){
@@ -63,12 +71,21 @@ public class DivorceController{
         return null;
     }
 
-    @GetMapping("/findall")
-    //Only admin can see all users
-//    @PreAuthorize("hasRole('ADMIN')")
-    public List<Divorce> findAll(){
-        return divorceRepo.findAll();
+
+    @PostMapping("/statements/add/{divorceID}")
+    public Divorce addStatement(@PathVariable Integer divorceID, @RequestBody DivorceStatement statement){
+
+        //find divorce
+        Divorce divorce = divorceRepo.findById(divorceID).orElseThrow(() -> new NoSuchElementException("Divorce with id " + divorceID + " not found"));
+        //add statement to divorce
+//        divorce.getStatement().add(statement);
+        divorceStatementRepo.save(statement);
+//        divorceRepo.save(divorce);
+
+        return divorce;
     }
+
+
 
 
 }
