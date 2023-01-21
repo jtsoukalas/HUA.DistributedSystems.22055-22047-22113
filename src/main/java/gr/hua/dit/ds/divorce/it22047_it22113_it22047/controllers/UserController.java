@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController{
     @Autowired
     private DivorceDAO divorceDAO;
@@ -26,12 +26,12 @@ public class UserController{
     @Autowired
     private UserRepository userRepo;
 
-    @GetMapping("/find/{taxNumber}")
+    @GetMapping("/find")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public User findByTaxNumber(@PathVariable Integer taxNumber){
+    public User findByTaxNumber(Integer taxNumber){
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
     }
-    @GetMapping("/findAll")
+    @GetMapping("/findall")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public List<User> findAll(){
         return userRepo.findAll();
@@ -51,8 +51,8 @@ public class UserController{
 
 //    @Autowired
 //    UserDAO userDAO;
-    @DeleteMapping("/delete/{taxNumber}")
-    public String deleteByTaxNumber(@PathVariable Integer taxNumber){
+    @DeleteMapping("/delete")
+    public String deleteByTaxNumber(Integer taxNumber){
         //fixme change from DAO to repository
         userRepo.deleteByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
 //        userDAO.delete(taxNumber);
