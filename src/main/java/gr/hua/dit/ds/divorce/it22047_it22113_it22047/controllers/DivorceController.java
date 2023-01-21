@@ -30,8 +30,8 @@ public class DivorceController{
     @Autowired
     DivorceStatementRepository divorceStatementRepo;
 
-    @GetMapping("/find/{taxNumber}")
-    public List<Divorce> findByTaxNumber(@PathVariable Integer taxNumber){
+    @GetMapping("/find")
+    public List<Divorce> findByTaxNumber(Integer taxNumber){
 //        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
 //                .getCases();  //fixme security
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
