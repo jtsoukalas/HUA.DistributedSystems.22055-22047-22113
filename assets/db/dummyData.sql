@@ -10,11 +10,20 @@ VALUES (DEFAULT, null, 'blah', '123', null, '2023-01-15 00:33:28.000000', 123456
 INSERT INTO public.user_divorce (divorce_id,user_id)
 VALUES ('1', 123456);
 
-INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, person_id)
-VALUES (1, 'ACCEPT', 'blah blah', 'SPOUSE', '2023-01-13 20:38:13.000000', 123456);
+INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
+VALUES (2, 'ACCEPT', 'blah blah', 'SPOUSE', '2023-01-13 20:38:13.000000', 1, 123456);
 
-INSERT INTO public.divorce_statement ("Divorce_id", statement_id)
-VALUES (1, 1);
+
+INSERT INTO public.user_divorce (user_id, divorce_id)
+VALUES (123789, 1);
+
+INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
+VALUES (1, 'ACCEPT', 'blah', 'SPOUSE', '2023-02-22 00:39:13.000000', 1, 123789);
+
+
+
+
+
 
 
 

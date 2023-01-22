@@ -33,8 +33,10 @@ public class UserController {
     //2. todo check if taxNumber of the User who submits the statement is included in the divorce and the faculty is the same with the role ( lawyers given taxNumbers)
 
     //3. todo check divorce status (if it is in the right stage)
-    public User findByTaxNumber(Integer taxNumber) {
-        return userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
+    public User findByTaxNumber(Integer taxNumber, String name) {
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
+         user.setFirstName(name);
+         return user;
     }
 
 

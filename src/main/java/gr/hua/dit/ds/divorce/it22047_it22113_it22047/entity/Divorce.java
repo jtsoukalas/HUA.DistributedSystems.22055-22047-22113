@@ -30,8 +30,8 @@ public class Divorce implements Serializable {
 
 
 //    cascade={CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.REMOVE,CascadeType.DETACH}
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "divorceStatement_id")
+    @OneToMany(mappedBy = "divorce",fetch = FetchType.LAZY)
+//    @JoinColumn(name = "divorceStatement_divorce_id")
     private List<DivorceStatement> statement;
 
     @Column(name = "notarial_act_number")
@@ -55,7 +55,35 @@ public class Divorce implements Serializable {
         this.applicationDate = applicationDate;
     }
 
-    public Divorce() {
+    public Divorce() {}
+
+    public boolean isAllStatementsAccepted(){
+        for(DivorceStatement divorceStatement : statement){
+            if(!divorceStatement.equals(DivorceStatementStatus.ACCEPT)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isReadyForNotarialAct(){
+        int countAcceptStatements = 0;
+        for(DivorceStatement divorceStatement : statement){
+            if(divorceStatement.getChoice().equals(DivorceStatementStatus.ACCEPT)){
+                countAcceptStatements++;
+            }
+        }
+        return countAcceptStatements == 3;
+    }
+
+    public boolean isClosed(){
+        return status.equals(DivorceStatus.COMPLETED) || status.equals(DivorceStatus.CANCELLED);
+    }
+
+    public void changeAllStatementsToPending(){
+        for(DivorceStatement divorceStatement : statement){
+            divorceStatement.setChoice(DivorceStatementStatus.PENDING);
+        }
     }
 
     public Integer getId() {
@@ -119,4 +147,6 @@ public class Divorce implements Serializable {
     public void setApplicationDate(Date applicationDate) {
         this.applicationDate = applicationDate;
     }
+
+
 }
