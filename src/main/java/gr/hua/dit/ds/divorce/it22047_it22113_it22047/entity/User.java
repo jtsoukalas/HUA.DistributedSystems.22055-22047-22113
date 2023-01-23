@@ -1,8 +1,10 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -47,7 +49,6 @@ public class User implements Serializable {
     @Column(name="register_timestamp")
     private Date registerTimestamp;
 
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_divorce",
@@ -56,8 +57,11 @@ public class User implements Serializable {
     @JsonBackReference
     private List<Divorce> divorces;
 
+    @Column(name="enabled")
+    @NotNull
+    private boolean enabled = false;
 
-    public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> cases) {
+    public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> divorces) {
         this.taxNumber = taxNumber;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -69,6 +73,7 @@ public class User implements Serializable {
         this.userStatus = userStatus;
         this.registerTimestamp = registerTimestamp;
         this.divorces = divorces;
+        this.enabled=false;
     }
 
     public User() {}
@@ -153,5 +158,15 @@ public class User implements Serializable {
         this.divorces = divorces;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
 }

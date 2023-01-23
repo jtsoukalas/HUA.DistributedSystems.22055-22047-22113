@@ -9,5 +9,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DivorceStatementRepository extends JpaRepository<DivorceStatement, Long> {
-    Optional<List<DivorceStatement>> findById(Integer taxNumber);
+    Optional<DivorceStatement> findById(Integer taxNumber);
 }

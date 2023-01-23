@@ -1,9 +1,12 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
+
 import javax.persistence.*;
-import javax.print.DocFlavor;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name="divorceStatement")
@@ -16,10 +19,12 @@ public class DivorceStatement implements Serializable {
 
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="person_id")
+
     private User person;
 
     @Enumerated(EnumType.STRING)
     @Column(name="faculty")
+    @NotNull
     private Faculty faculty;
 
     @Column(name="comment")

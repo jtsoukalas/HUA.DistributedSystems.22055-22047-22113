@@ -1,24 +1,27 @@
 INSERT INTO public.user (tax_number, email, first_name, identity_card_number, last_name, password, phone_number,
-                         register_timestamp, user_status)
-VALUES (123456, 'katerina@gmail.com', 'Katerina', 'AG45789', 'Konstantinidi', '12345', '6985647881',
-        '2023-01-13 20:26:07.000000', null);
+                         register_timestamp, user_status, enabled)
+VALUES (123456789, 'katerina@gmail.com', 'Katerina', 'AG45789', 'Konstantinidi', '12345', '6985647881',
+        '2023-01-13 20:26:07.000000', null, true);
 
-INSERT INTO public.divorce (id, application_timest, contract_details, notarial_act_number, status, submit_date,
+INSERT INTO public.user_roles ("User_tax_number", roles)
+VALUES (123456789, 'SPOUSE');
+
+INSERT INTO public.divorce (id, application_timestamp, contract_details, notarial_act_number, status,
                             lead_lawyer_id)
-VALUES (DEFAULT, null, 'blah', '123', null, '2023-01-15 00:33:28.000000', 123456);
+VALUES (1, '2023-01-15 00:33:28.000000', 'blah', '123', 'PENDING', 123456789);
 
 INSERT INTO public.user_divorce (divorce_id,user_id)
-VALUES ('1', 123456);
+VALUES ('1', 123456789);
 
 INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
-VALUES (2, 'ACCEPT', 'blah blah', 'SPOUSE', '2023-01-13 20:38:13.000000', 1, 123456);
+VALUES (2, 'PENDING', 'blah blah', 'SPOUSE', '2023-01-13 20:38:13.000000', 1, 123456789);
 
-
-INSERT INTO public.user_divorce (user_id, divorce_id)
-VALUES (123789, 1);
-
-INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
-VALUES (1, 'ACCEPT', 'blah', 'SPOUSE', '2023-02-22 00:39:13.000000', 1, 123789);
+--
+-- INSERT INTO public.user_divorce (user_id, divorce_id)
+-- VALUES (123789, 1);
+--
+-- INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
+-- VALUES (1, 'ACCEPT', 'blah', 'SPOUSE', '2023-02-22 00:39:13.000000', 1, 123789);
 
 
 

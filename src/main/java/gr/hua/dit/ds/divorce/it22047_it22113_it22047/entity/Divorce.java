@@ -1,12 +1,14 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "divorce")
@@ -19,9 +21,10 @@ public class Divorce implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @NotNull
     private DivorceStatus status;
 
-    @OneToOne() //cascade = CascadeType.PERSIST
+    @OneToOne() //cascade = CascadeType.PERSIST **
     @JoinColumn(name = "lead_lawyer_id")
     private User leadLawyer;
 
@@ -30,17 +33,18 @@ public class Divorce implements Serializable {
 
 
 //    cascade={CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.REMOVE,CascadeType.DETACH}
-    @OneToMany(mappedBy = "divorce",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "divorce",fetch = FetchType.LAZY, cascade= {CascadeType.PERSIST,
+            CascadeType.DETACH, CascadeType.REFRESH}) //**
 //    @JoinColumn(name = "divorceStatement_divorce_id")
     private List<DivorceStatement> statement;
 
     @Column(name = "notarial_act_number")
     private String notarialDeedNumber;
 
-    @Column(name = "submit_date")
-    private Date submitDate;
+    @Column(name = "close_timestamp")
+    private Date closeDate;
 
-    @Column(name = "application_timest")
+    @Column(name = "application_timestamp")
     private Date applicationDate;
 
 
@@ -51,7 +55,7 @@ public class Divorce implements Serializable {
         this.contractDetails = contractDetails;
         this.statement = statement;
         this.notarialDeedNumber = notarialDeedNumber;
-        this.submitDate = submitDate;
+        this.closeDate = submitDate;
         this.applicationDate = applicationDate;
     }
 
@@ -78,12 +82,6 @@ public class Divorce implements Serializable {
 
     public boolean isClosed(){
         return status.equals(DivorceStatus.COMPLETED) || status.equals(DivorceStatus.CANCELLED);
-    }
-
-    public void changeAllStatementsToPending(){
-        for(DivorceStatement divorceStatement : statement){
-            divorceStatement.setChoice(DivorceStatementStatus.PENDING);
-        }
     }
 
     public Integer getId() {
@@ -132,12 +130,12 @@ public class Divorce implements Serializable {
         this.notarialDeedNumber = notarialDeedNumber;
     }
 
-    public Date getSubmitDate() {
-        return submitDate;
+    public Date getCloseDate() {
+        return closeDate;
     }
 
-    public void setSubmitDate(Date submitDate) {
-        this.submitDate = submitDate;
+    public void setCloseDate(Date closeDate) {
+        this.closeDate = closeDate;
     }
 
     public Date getApplicationDate() {
@@ -148,5 +146,31 @@ public class Divorce implements Serializable {
         this.applicationDate = applicationDate;
     }
 
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Divorce)) return false;
+//        Divorce divorce = (Divorce) o;
+//        return getId().equals(divorce.getId()) && getStatus() == divorce.getStatus() && getLeadLawyer().equals(divorce.getLeadLawyer()) && Objects.equals(getContractDetails(), divorce.getContractDetails()) && Objects.equals(getStatement(), divorce.getStatement()) && Objects.equals(getNotarialDeedNumber(), divorce.getNotarialDeedNumber()) && Objects.equals(getCloseDate(), divorce.getCloseDate()) && Objects.equals(getApplicationDate(), divorce.getApplicationDate());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(getId(), getStatus(), getLeadLawyer(), getContractDetails(), getStatement(), getNotarialDeedNumber(), getCloseDate(), getApplicationDate());
+//    }
 
+    public boolean isStatementsValid(){
+        List<Integer> addedPersons = new ArrayList<>();
+        for (DivorceStatement statement : statement) {
+            if(addedPersons.contains(statement.getPerson().getTaxNumber())){
+                throw new IllegalArgumentException("Person with tax number " + statement.getPerson().getTaxNumber() + " is already added on that divorce application as involved party");
+            } else {
+                addedPersons.add(statement.getPerson().getTaxNumber());
+            }
+            if(!statement.getChoice().equals(DivorceStatementStatus.PENDING)){
+                throw new IllegalArgumentException("Statement status for "+statement.getPerson().getTaxNumber() + " is " + statement.getChoice() + " should be 'PENDING' when creating divorce application");
+            }
+        }
+        return true;
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Statement;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,15 +29,9 @@ public class UserController {
 
     @GetMapping("/find")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    //1. todo check if taxNumber of auth user is the same as the one in the statement (person)
-
-    //2. todo check if taxNumber of the User who submits the statement is included in the divorce and the faculty is the same with the role ( lawyers given taxNumbers)
-
-    //3. todo check divorce status (if it is in the right stage)
-    public User findByTaxNumber(Integer taxNumber, String name) {
-        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
-         user.setFirstName(name);
-         return user;
+    public User findByTaxNumber(Integer taxNumber) {
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(()-> new NoSuchElementException("There is no user with tax number " + taxNumber));
+         return user; //fixme
     }
 
 
@@ -59,15 +54,18 @@ public class UserController {
         // 1. todo check if taxNumber of auth user is the same as the lead lawyer of the divorce
 
         //2. todo check divorce status (if it is in the right stage)
+
+        // todo user cannot change taxNumber, identityNumber, fnale, lname
         return userRepo.save(user);
     }
 
 
-    @DeleteMapping("/delete")
-    public String deleteByTaxNumber(Integer taxNumber) {
-        //fixme change from DAO to repository
-        userRepo.deleteByTaxNumber(taxNumber).orElseThrow(NoSuchElementException::new);
-//        userDAO.delete(taxNumber);
-        return "User with tax number " + taxNumber + " deleted";
+    @PostMapping("/disableAccess")
+    //    @PreAuthorize("hasRole('ADMIN')")
+    public void disableAccessByTaxNumber(Integer taxNumber) {
+        User user = userRepo.findByTaxNumber(taxNumber)
+                .orElseThrow(() -> new NoSuchElementException("User with taxNumber " + taxNumber + " not found"));
+        user.setEnabled(false);
+        userRepo.save(user);
     }
 }
