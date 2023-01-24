@@ -44,6 +44,7 @@ public class User implements Serializable {
     private Collection<Role> roles;
 
     @Column(name="user_status")
+    @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
     @Column(name="register_timestamp")

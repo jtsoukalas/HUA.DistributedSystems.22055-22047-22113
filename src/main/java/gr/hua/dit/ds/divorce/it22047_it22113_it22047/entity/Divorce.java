@@ -1,6 +1,9 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -36,6 +39,7 @@ public class Divorce implements Serializable {
     @OneToMany(mappedBy = "divorce",fetch = FetchType.LAZY, cascade= {CascadeType.PERSIST,
             CascadeType.DETACH, CascadeType.REFRESH}) //**
 //    @JoinColumn(name = "divorceStatement_divorce_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private List<DivorceStatement> statement;
 
     @Column(name = "notarial_act_number")

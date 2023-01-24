@@ -17,7 +17,7 @@ public class DivorceStatement implements Serializable {
     @Column(name="id")
     private Integer id;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name="person_id")
 
     private User person;
@@ -97,5 +97,18 @@ public class DivorceStatement implements Serializable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DivorceStatement)) return false;
+        DivorceStatement that = (DivorceStatement) o;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getPerson(), that.getPerson()) && getFaculty() == that.getFaculty() && Objects.equals(getComment(), that.getComment()) && getChoice() == that.getChoice() && Objects.equals(getTimestamp(), that.getTimestamp()) && Objects.equals(divorce, that.divorce);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getPerson(), getFaculty(), getComment(), getChoice(), getTimestamp(), divorce);
     }
 }

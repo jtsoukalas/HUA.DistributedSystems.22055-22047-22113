@@ -8,6 +8,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/divorce")
-public class DivorceController{
+public class DivorceController {
 
     @Autowired
     DivorceRepository divorceRepo;
@@ -32,13 +33,13 @@ public class DivorceController{
     DivorceDAO divorceDAO;
 
     @GetMapping("/findAll")
-    public List<Divorce> findAll(){
+    public List<Divorce> findAll() {
         return divorceRepo.findAll();
     }
 
     @GetMapping("/adminFind")
 //        @PreAuthorize("hasRole('ADMIN')")
-    public List<Divorce> findByTaxNumber(Integer taxNumber){
+    public List<Divorce> findByTaxNumber(Integer taxNumber) {
 //        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
 //                .getCases();  //fixme security
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
@@ -47,42 +48,54 @@ public class DivorceController{
 
     @GetMapping("/findByTaxNumber")
 //    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE")
-    public List<Divorce> findByTaxNumber(Integer senderTaxNumber, Integer taxNumber){
+    public List<Divorce> findByTaxNumber(Integer senderTaxNumber, Integer taxNumber) {
         //1. todo security check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
-        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
+        List<Divorce> divorces = userRepo.findByTaxNumber(senderTaxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + senderTaxNumber + " not found"))
                 .getDivorces();
+
+        BiPredicate<Divorce, Integer> containsName = (d, n) -> {
+            List<DivorceStatement> divorceStatements = d.getStatement();
+            for (DivorceStatement statement : divorceStatements) {
+                if (statement.getPerson().getTaxNumber().equals(n)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        return divorces.stream().filter(d -> containsName.test(d, taxNumber)).collect(Collectors.toList());
     }
 
     @GetMapping("/findByName")
 //    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE")
-    public List<Divorce> findByName(String name, Integer senderTaxNumber){
+    public List<Divorce> findByName(String name, Integer senderTaxNumber) {
         //1. todo security check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
         List<Divorce> divorces = userRepo.findByTaxNumber(senderTaxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + senderTaxNumber + " not found"))
                 .getDivorces();
 
         BiPredicate<Divorce, String> containsName = (d, n) -> {
-                List<DivorceStatement> divorceStatements = d.getStatement();
-                for (DivorceStatement statement : divorceStatements) {
-                    if (statement.getPerson().getLastName().toLowerCase().contains(n.toLowerCase()) ||
-                            statement.getPerson().getFirstName().toLowerCase().contains(n.toLowerCase())) {
-                        return true;
-                    }
+            List<DivorceStatement> divorceStatements = d.getStatement();
+            for (DivorceStatement statement : divorceStatements) {
+                if (statement.getPerson().getLastName().toLowerCase().contains(n.toLowerCase()) ||
+                        statement.getPerson().getFirstName().toLowerCase().contains(n.toLowerCase())) {
+                    return true;
                 }
-                return false;
+            }
+            return false;
         };
 
-        return divorces.stream().filter(d-> containsName.test(d,name)).collect(Collectors.toList());
+        return divorces.stream().filter(d -> containsName.test(d, name)).collect(Collectors.toList());
     }
 
 
     @PostMapping("/edit")
 //    @PreAuthorize("hasRole('LAWYER')
-    public Divorce edit(@RequestBody Divorce divorce){
+    public Divorce edit(@RequestBody Divorce divorce) {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
 
         //3. todo security check divorce status (if it is in the right stage)
 
-        if(divorceRepo.findById(divorce.getId()).orElseThrow(()-> new NoSuchElementException("Could not find specified divorce")).isClosed()){
+        if (divorceRepo.findById(divorce.getId()).orElseThrow(() -> new NoSuchElementException("Could not find specified divorce")).isClosed()) {
             if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
                 throw new IllegalStateException("Divorce is already completed. Changes are not allowed");
             } else {
@@ -91,14 +104,14 @@ public class DivorceController{
         }
 
         if (!divorce.getStatus().equals(DivorceStatus.DRAFT) && !divorce.getStatus().equals(DivorceStatus.PENDING)) {
-            throw new IllegalStateException("Divorce status: "+divorce.getStatus()+" is not allowed. Divorces status may be DRAFT or PENDING when undergoing changes");
+            throw new IllegalStateException("Divorce status: " + divorce.getStatus() + " is not allowed. Divorces status may be DRAFT or PENDING when undergoing changes");
         }
 
 //        divorce.isStatementsValid(); //fixme
 
         changeAllStatementsToPending(divorce.getStatement());
 
-        divorceRepo.findById(divorce.getId()).orElse(null).setApplicationDate(new Date (System.currentTimeMillis()));
+        divorceRepo.findById(divorce.getId()).orElse(null).setApplicationDate(new Date(System.currentTimeMillis()));
 
         return divorceRepo.save(divorce);
     }
@@ -107,12 +120,12 @@ public class DivorceController{
 
     @PostMapping("/save")
 //    @PreAuthorize("hasRole('LAWYER')
-    public Divorce save(@RequestBody Divorce divorce){
+    public Divorce save(@RequestBody Divorce divorce) {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
 
         //3. todo security check divorce status (if it is in the right stage)
 
-        if(divorceRepo.findById(divorce.getId()).orElse(null).isClosed()){
+        if (divorceRepo.findById(divorce.getId()).orElse(null).isClosed()) {
             if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
                 throw new IllegalStateException("Divorce is already completed");
             } else {
@@ -124,9 +137,13 @@ public class DivorceController{
             throw new IllegalStateException("Divorce status cannot be completed or cancelled by a lawyer");
         }
 
-        if(!divorce.isStatementsValid()){
+
+        if (!divorce.isStatementsValid()) {
             throw new IllegalArgumentException("Divorce statements are not valid. Check for multiple instances of the same person");
         }
+
+        createDivorceStatementsIfNotExist(divorce.getStatement(), divorce);
+
 
 //        changeAllStatementsToPending(divorce.getStatement());
 
@@ -136,7 +153,7 @@ public class DivorceController{
     }
 
     @PostMapping("/addStatement")
-    public Divorce addStatement(Integer divorceID, @RequestBody DivorceStatement statement){
+    public Divorce addStatement(Integer divorceID, @RequestBody DivorceStatement statement) {
 
         //1. todo security check if taxNumber of auth user is the same as the one in the statement (person)
 
@@ -147,7 +164,7 @@ public class DivorceController{
         if (!divorce.isClosed()) {
             statement.setTimestamp(new Date(System.currentTimeMillis()));
             divorce.getStatement().add(statement);
-            if(statement.getChoice().equals(DivorceStatementStatus.REJECT)){
+            if (statement.getChoice().equals(DivorceStatementStatus.REJECT)) {
                 divorce.setStatus(DivorceStatus.CANCELLED);
             } else if (divorce.isAllStatementsAccepted()) {
                 divorce.setStatus(DivorceStatus.COMPLETED);
@@ -164,13 +181,32 @@ public class DivorceController{
         return divorce;
     }
 
-    private void changeAllStatementsToPending(List<DivorceStatement> statements){
-        for(DivorceStatement statement : statements){
+    private void changeAllStatementsToPending(List<DivorceStatement> statements) {
+        for (DivorceStatement statement : statements) {
             DivorceStatement s = divorceStatementRepo.findById(statement.getId()).orElseThrow(()
                     -> new NoSuchElementException("DivorceStatement with id " + statement.getId() + " not found"));
             s.setChoice(DivorceStatementStatus.PENDING);
             s.setTimestamp(null);
             s.setComment(null);
         }
+    }
+
+    private void createDivorceStatementsIfNotExist(List<DivorceStatement> statements, Divorce divorce) {
+        List<DivorceStatement> newStatements = new ArrayList<>();
+        for (DivorceStatement statement : statements) {
+            if (statement.getId() == null) {
+                newStatements.add(divorceStatementRepo.save(statement));
+            }
+//            if (divorceStatementRepo.findById(statement.getId())
+//                    .orElseThrow(() -> new NoSuchElementException("Divorce statement with id: " + statement.getId() + " wasn't found"))
+//                    .equals(statement)) {
+//                newStatements.add(statement);
+//            } else {
+//               throw new IllegalArgumentException("Divorce statement with id: " + statement.getId() + " already exists and doesn't match the one provided");
+//            }
+
+            newStatements.add(divorceStatementRepo.save(statement));
+        }
+        divorce.setStatement(newStatements);
     }
 }
