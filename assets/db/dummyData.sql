@@ -1,7 +1,7 @@
 INSERT INTO public.user (tax_number, email, first_name, identity_card_number, last_name, password, phone_number,
                          register_timestamp, user_status, enabled)
 VALUES (123456789, 'katerina@gmail.com', 'Katerina', 'AG45789', 'Konstantinidi', '12345', '6985647881',
-        '2023-01-13 20:26:07.000000', 'ACTIVE', true);
+        '2023-01-13 20:26:07.000000', 'ENABLED', true);
 
 INSERT INTO public.user (tax_number, email, first_name, identity_card_number, last_name, password, phone_number,
                          register_timestamp, user_status, enabled)
@@ -12,7 +12,7 @@ INSERT INTO public.user (tax_number, email, user_status, enabled)
 VALUES (1234567892, 'alkis@hua.gr', 'PENDING_REGISTRATION', true);
 
 INSERT INTO public.user (tax_number, email, user_status, enabled)
-VALUES (1234567893, 'maria@hua.gr', 'INACTIVE', false);
+VALUES (1234567893, 'maria@hua.gr', 'DISABLED', false);
 
 
 INSERT INTO public.user_roles ("User_tax_number", roles)

@@ -1,9 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 
-import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.UserDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatus;
-import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.UserStatus;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -67,13 +63,13 @@ public class Statistics {
     @GetMapping("/users/active")
 //    @PreAuthorize("hasRole('ADMIN')")
     public long activeUsers() {
-       return userRepo.findAll().stream().filter(user -> user.getUserStatus().equals(UserStatus.ACTIVE)).count();
+       return userRepo.findAll().stream().filter(user -> user.getUserStatus().equals(UserStatus.ENABLED)).count();
     }
 
     @GetMapping("/users/inactive")
 //    @PreAuthorize("hasRole('ADMIN')")
     public long inactiveUsers() {
-       return userRepo.findAll().stream().filter(user -> user.getUserStatus().equals(UserStatus.INACTIVE)).count();
+       return userRepo.findAll().stream().filter(user -> user.getUserStatus().equals(UserStatus.DISABLED)).count();
     }
 
     @GetMapping("/users/pendingRegistration")

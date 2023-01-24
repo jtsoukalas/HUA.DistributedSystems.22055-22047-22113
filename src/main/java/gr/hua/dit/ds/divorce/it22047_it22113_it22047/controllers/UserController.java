@@ -3,16 +3,17 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.UserDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Role;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.UserStatus;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Statement;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Supplier;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -30,8 +31,8 @@ public class UserController {
     @GetMapping("/find")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public User findByTaxNumber(Integer taxNumber) {
-        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(()-> new NoSuchElementException("There is no user with tax number " + taxNumber));
-         return user; //fixme
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("There is no user with tax number " + taxNumber));
+        return user; //fixme
     }
 
 
@@ -67,5 +68,40 @@ public class UserController {
                 .orElseThrow(() -> new NoSuchElementException("User with taxNumber " + taxNumber + " not found"));
         user.setEnabled(false);
         userRepo.save(user);
+    }
+
+    @Autowired
+    private EmailSenderService senderService;
+
+    @PostMapping("/invite")
+    public String invite(Integer taxNumber, String email) {
+        User user = userRepo.findByTaxNumber(taxNumber).orElse(null);
+
+        if (user != null && user.getEmail().toLowerCase().equals(email.toLowerCase())) {
+            switch (user.getUserStatus()){
+                case ENABLED:
+                    throw new IllegalArgumentException("User is already enabled");
+                case DISABLED:
+                    throw new IllegalArgumentException("User is disabled. Please contact an admin");
+                case PENDING_APPROVAL:
+                    throw new IllegalArgumentException("User is pending approval from admin");
+            }
+        } else if (user != null) {
+            throw new IllegalArgumentException("User already exists with given tax number and different email");
+        }
+
+        User newUser = new User();
+        newUser.setTaxNumber(taxNumber);
+        newUser.setEmail(email);
+        newUser.setEnabled(false);
+        newUser.setRoles(List.of(Role.SPOUSE));
+        newUser.setUserStatus(UserStatus.PENDING_REGISTRATION);
+
+        userRepo.save(newUser);
+
+        senderService.sendSimpleEmail(email,
+                "Invitation to divorce application",
+                "Message to person with tax number: "+ taxNumber+" \nYou have been invited to a divorce application. Please register at http://localhost:4200/register");
+        return "Invitation sent";
     }
 }
