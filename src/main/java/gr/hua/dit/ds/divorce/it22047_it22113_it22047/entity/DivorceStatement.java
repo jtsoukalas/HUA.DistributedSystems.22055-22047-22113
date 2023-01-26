@@ -3,7 +3,6 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -19,7 +18,6 @@ public class DivorceStatement implements Serializable {
 
     @OneToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name="person_id")
-
     private User person;
 
     @Enumerated(EnumType.STRING)
@@ -33,7 +31,7 @@ public class DivorceStatement implements Serializable {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name="statement_status")
     @Column(name="choice")
-    private DivorceStatementStatus choice;
+    private DivorceStatementChoice choice;
 
     @Column(name="timestamp")
     private Date timestamp;
@@ -43,9 +41,9 @@ public class DivorceStatement implements Serializable {
     private Divorce divorce;
 
 
-    public DivorceStatement(){}
+    public DivorceStatement(User user){}
 
-    public DivorceStatement(Integer id, User person, Faculty faculty, String comment, DivorceStatementStatus choice, Date timestamp, Divorce divorce) {
+    public DivorceStatement(Integer id, User person, Faculty faculty, String comment, DivorceStatementChoice choice, Date timestamp, Divorce divorce) {
         this.id = id;
         this.person = person;
         this.faculty = faculty;
@@ -53,6 +51,16 @@ public class DivorceStatement implements Serializable {
         this.choice = choice;
         this.timestamp = timestamp;
         this.divorce = divorce;
+    }
+
+    public DivorceStatement(User person, Faculty faculty, DivorceStatementChoice choice, Divorce divorce) {
+        this.person = person;
+        this.faculty = faculty;
+        this.choice = choice;
+        this.divorce = divorce;
+    }
+
+    public DivorceStatement() {
     }
 
     public Integer getId() {
@@ -83,11 +91,11 @@ public class DivorceStatement implements Serializable {
         this.comment = comment;
     }
 
-    public DivorceStatementStatus getChoice() {
+    public DivorceStatementChoice getChoice() {
         return choice;
     }
 
-    public void setChoice(DivorceStatementStatus agreement) {
+    public void setChoice(DivorceStatementChoice agreement) {
         this.choice = agreement;
     }
 

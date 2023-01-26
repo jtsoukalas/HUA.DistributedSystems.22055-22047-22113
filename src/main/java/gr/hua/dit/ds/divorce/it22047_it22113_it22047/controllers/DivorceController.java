@@ -2,10 +2,12 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.*;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.*;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStatementRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -90,30 +92,13 @@ public class DivorceController {
 
     @PostMapping("/edit")
 //    @PreAuthorize("hasRole('LAWYER')
-    public Divorce edit(@RequestBody Divorce divorce) {
+    public Divorce edit(@RequestBody DivorceAPI divorceEdits) {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
 
         //3. todo security check divorce status (if it is in the right stage)
 
-        if (divorceRepo.findById(divorce.getId()).orElseThrow(() -> new NoSuchElementException("Could not find specified divorce")).isClosed()) {
-            if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
-                throw new IllegalStateException("Divorce is already completed. Changes are not allowed");
-            } else {
-                throw new IllegalStateException("Divorce is cancelledChanges are not allowed");
-            }
-        }
 
-        if (!divorce.getStatus().equals(DivorceStatus.DRAFT) && !divorce.getStatus().equals(DivorceStatus.PENDING)) {
-            throw new IllegalStateException("Divorce status: " + divorce.getStatus() + " is not allowed. Divorces status may be DRAFT or PENDING when undergoing changes");
-        }
-
-//        divorce.isStatementsValid(); //fixme
-
-        changeAllStatementsToPending(divorce.getStatement());
-
-        divorceRepo.findById(divorce.getId()).orElse(null).setApplicationDate(new Date(System.currentTimeMillis()));
-
-        return divorceRepo.save(divorce);
+        return saveDivorce(divorceEdits, divorceRepo.findById(divorceEdits.getId()).orElseThrow(()->new IllegalArgumentException("Divorce wasn't found in DB")));
     }
 
     //FIXME Edit divorce without entering all data for related objects (divorceStatement, person, etc)
@@ -164,7 +149,7 @@ public class DivorceController {
         if (!divorce.isClosed()) {
             statement.setTimestamp(new Date(System.currentTimeMillis()));
             divorce.getStatement().add(statement);
-            if (statement.getChoice().equals(DivorceStatementStatus.REJECT)) {
+            if (statement.getChoice().equals(DivorceStatementChoice.REJECT)) {
                 divorce.setStatus(DivorceStatus.CANCELLED);
             } else if (divorce.isAllStatementsAccepted()) {
                 divorce.setStatus(DivorceStatus.COMPLETED);
@@ -185,7 +170,7 @@ public class DivorceController {
         for (DivorceStatement statement : statements) {
             DivorceStatement s = divorceStatementRepo.findById(statement.getId()).orElseThrow(()
                     -> new NoSuchElementException("DivorceStatement with id " + statement.getId() + " not found"));
-            s.setChoice(DivorceStatementStatus.PENDING);
+            s.setChoice(DivorceStatementChoice.PENDING);
             s.setTimestamp(null);
             s.setComment(null);
         }
@@ -208,5 +193,90 @@ public class DivorceController {
             newStatements.add(divorceStatementRepo.save(statement));
         }
         divorce.setStatement(newStatements);
+    }
+
+    /**
+     * Prepare and save divorce object to DB
+     *
+     * @param divorceSource object with source data
+     * @param divorce       object subject to changes, give NULL if new Divorce
+     */
+    private Divorce saveDivorce(DivorceAPI divorceSource, @Nullable Divorce divorce) {
+        Divorce finalDivorce;
+
+        if (divorce == null) {
+            finalDivorce = divorceRepo.save(new Divorce());
+        } else {
+            finalDivorce=divorceRepo.findById(divorceSource.getId())
+                    .orElseThrow(()-> new NoSuchElementException("Given divorce wasn't found in DB"));
+            //Check if it's closed
+            if (finalDivorce.isClosed()) {
+                if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
+                    throw new IllegalStateException("Divorce is already completed. Changes are not allowed");
+                } else {
+                    throw new IllegalStateException("Divorce is cancelled. Changes are not allowed");
+                }
+            }
+        }
+
+        if (divorce == null || divorceSource.isDraft()) {
+            finalDivorce.setLeadLawyer(checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.LAWYER));
+
+            List<DivorceStatement> finalStatements = new ArrayList<>();
+
+            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
+                    checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.LAWYER),
+                    Faculty.LAWYER, DivorceStatementChoice.PENDING, finalDivorce)));
+
+            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
+                    checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.SPOUSE),
+                    Faculty.SPOUSE, DivorceStatementChoice.PENDING, finalDivorce)));
+
+            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
+                    checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.SPOUSE),
+                    Faculty.SPOUSE, DivorceStatementChoice.PENDING, finalDivorce)));
+
+            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
+                    checkRole(divorceSource.getNotaryTaxNumber(), Faculty.NOTARY),
+                    Faculty.NOTARY, DivorceStatementChoice.INACTIVE, finalDivorce)));
+
+            finalDivorce.setStatement(finalStatements);
+        }
+
+        finalDivorce.setContractDetails(divorceSource.getContractDetails());
+
+        if (divorceSource.isDraft()) {
+            if (divorce!=null && !divorce.getStatus().equals(DivorceStatus.DRAFT)){
+                throw new IllegalStateException("Divorce is in pending mode and cannot be changed to draft");
+            }
+            divorce.setStatus(DivorceStatus.DRAFT);
+        } else {
+            divorce.setStatus(DivorceStatus.PENDING);
+            if(divorce==null){
+                finalDivorce.setApplicationDate(new Date(System.currentTimeMillis()));
+            }
+            //TODO Inform involved parties in order to review the divorce
+        }
+        return divorceRepo.save(finalDivorce);
+    }
+
+    /**
+     * Checks role for given tax number
+     *
+     * @param taxNumber to search on DB
+     * @param faculty   to cross-check
+     * @return User instance from DB
+     * @throws IllegalArgumentException when tax number does not exist in DB or when role isn't assigned
+     */
+    private User checkRole(Integer taxNumber, Faculty faculty) throws IllegalArgumentException {
+
+        User user = userRepo.findByTaxNumber(taxNumber)
+                .orElseThrow(() -> new IllegalArgumentException("User with role: " + faculty.name() + " with tax number: " + taxNumber + " not found."));
+
+        if (!user.getRoles().contains(faculty)) {
+            throw new IllegalArgumentException("User with tax number: " + taxNumber + " does not have the role: " + faculty.name());
+        }
+
+        return user;
     }
 }

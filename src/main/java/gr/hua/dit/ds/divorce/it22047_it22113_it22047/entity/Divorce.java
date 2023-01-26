@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "divorce")
@@ -67,7 +65,7 @@ public class Divorce implements Serializable {
 
     public boolean isAllStatementsAccepted(){
         for(DivorceStatement divorceStatement : statement){
-            if(!divorceStatement.equals(DivorceStatementStatus.ACCEPT)){
+            if(!divorceStatement.equals(DivorceStatementChoice.ACCEPT)){
                 return false;
             }
         }
@@ -77,7 +75,7 @@ public class Divorce implements Serializable {
     public boolean isReadyForNotarialAct(){
         int countAcceptStatements = 0;
         for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getChoice().equals(DivorceStatementStatus.ACCEPT)){
+            if(divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPT)){
                 countAcceptStatements++;
             }
         }
@@ -171,7 +169,7 @@ public class Divorce implements Serializable {
             } else {
                 addedPersons.add(statement.getPerson().getTaxNumber());
             }
-            if(!statement.getChoice().equals(DivorceStatementStatus.PENDING)){
+            if(!statement.getChoice().equals(DivorceStatementChoice.PENDING)){
                 throw new IllegalArgumentException("Statement status for "+statement.getPerson().getTaxNumber() + " is " + statement.getChoice() + " should be 'PENDING' when creating divorce application");
             }
         }
