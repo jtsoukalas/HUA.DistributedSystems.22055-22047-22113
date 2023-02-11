@@ -34,6 +34,31 @@ public class DivorceController {
     @Autowired
     DivorceDAO divorceDAO;
 
+
+
+    /**
+     * Returns divorces of the user with the given tax number
+     * @param taxNumber we might want to remove the param after security is implemented
+     * @return List of divorces
+     */
+    @GetMapping("/myDivorces")
+//    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE')")
+    public List<DivorceAPIResponseConcise> myDivorces(Integer taxNumber) {
+        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
+                .getDivorces().stream().map(d-> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns divorce details for the given id
+     * @param id
+     * @return
+     * @throws NoSuchElementException is id is not found
+     */
+    @GetMapping("/findById")
+    public DivorceAPIResponse findById(Integer id) throws NoSuchElementException {
+        return new DivorceAPIResponse(divorceRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Divorce with id " + id + " not found")));
+    }
+    
     @GetMapping("/findAll")
     public List<Divorce> findAll() {
         return divorceRepo.findAll();
@@ -49,7 +74,7 @@ public class DivorceController {
     }
 
     @GetMapping("/findByTaxNumber")
-//    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE")
+//    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE')")
     public List<Divorce> findByTaxNumber(Integer senderTaxNumber, Integer taxNumber) {
         //1. todo security check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
         List<Divorce> divorces = userRepo.findByTaxNumber(senderTaxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + senderTaxNumber + " not found"))
@@ -132,7 +157,7 @@ public class DivorceController {
 
 //        changeAllStatementsToPending(divorce.getStatement());
 
-//        divorceRepo.findById(divorce.getId()).orElse(null).setApplicationDate(new Date (System.currentTimeMillis()));
+//        divorceRepo.findById(divorce.getId()).orElse(null).setDate(new Date (System.currentTimeMillis()));
 
         return divorceRepo.save(divorce);
     }
@@ -273,10 +298,12 @@ public class DivorceController {
         User user = userRepo.findByTaxNumber(taxNumber)
                 .orElseThrow(() -> new IllegalArgumentException("User with role: " + faculty.name() + " with tax number: " + taxNumber + " not found."));
 
-        if (!user.getRoles().contains(faculty)) {
+        if (!user.getRoles().contains(faculty.name())) {
             throw new IllegalArgumentException("User with tax number: " + taxNumber + " does not have the role: " + faculty.name());
         }
 
         return user;
     }
+
+
 }

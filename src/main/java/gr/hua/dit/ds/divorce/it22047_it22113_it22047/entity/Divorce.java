@@ -153,12 +153,12 @@ public class Divorce implements Serializable {
 //        if (this == o) return true;
 //        if (!(o instanceof Divorce)) return false;
 //        Divorce divorce = (Divorce) o;
-//        return getId().equals(divorce.getId()) && getStatus() == divorce.getStatus() && getLeadLawyer().equals(divorce.getLeadLawyer()) && Objects.equals(getContractDetails(), divorce.getContractDetails()) && Objects.equals(getStatement(), divorce.getStatement()) && Objects.equals(getNotarialDeedNumber(), divorce.getNotarialDeedNumber()) && Objects.equals(getCloseDate(), divorce.getCloseDate()) && Objects.equals(getApplicationDate(), divorce.getApplicationDate());
+//        return getId().equals(divorce.getId()) && getStatus() == divorce.getStatus() && getLeadLawyer().equals(divorce.getLeadLawyer()) && Objects.equals(getContractDetails(), divorce.getContractDetails()) && Objects.equals(getStatement(), divorce.getStatement()) && Objects.equals(getNotarialDeedNumber(), divorce.getNotarialDeedNumber()) && Objects.equals(getCloseDate(), divorce.getCloseDate()) && Objects.equals(getDate(), divorce.getDate());
 //    }
 //
 //    @Override
 //    public int hashCode() {
-//        return Objects.hash(getId(), getStatus(), getLeadLawyer(), getContractDetails(), getStatement(), getNotarialDeedNumber(), getCloseDate(), getApplicationDate());
+//        return Objects.hash(getId(), getStatus(), getLeadLawyer(), getContractDetails(), getStatement(), getNotarialDeedNumber(), getCloseDate(), getDate());
 //    }
 
     public boolean isStatementsValid(){
@@ -174,5 +174,51 @@ public class Divorce implements Serializable {
             }
         }
         return true;
+    }
+
+    public User getNotary (){
+        for(DivorceStatement divorceStatement : statement){
+            if(divorceStatement.getFaculty().equals(Faculty.NOTARY)){
+                return divorceStatement.getPerson();
+            }
+        }
+        return null;
+    }
+
+    public List<User> getSpouses (){
+        List<User> spouses = new ArrayList<>();
+        for(DivorceStatement divorceStatement : statement){
+            if(divorceStatement.getFaculty().equals(Faculty.SPOUSE)){
+                spouses.add(divorceStatement.getPerson());
+            }
+        }
+        return spouses;
+    }
+
+    public User getSpouseOne (){
+        for(DivorceStatement divorceStatement : statement){
+            if(divorceStatement.getFaculty().equals(Faculty.SPOUSE_ONE)){
+                return divorceStatement.getPerson();
+            }
+        }
+        return null;
+    }
+
+    public User getSpouseTwo (){
+        for(DivorceStatement divorceStatement : statement){
+            if(divorceStatement.getFaculty().equals(Faculty.SPOUSE_TWO)){
+                return divorceStatement.getPerson();
+            }
+        }
+        return null;
+    }
+
+    public User getLawyer (){
+        for(DivorceStatement divorceStatement : statement){
+            if(divorceStatement.getFaculty().equals(Faculty.LAWYER)){
+                return divorceStatement.getPerson();
+            }
+        }
+        return null;
     }
 }

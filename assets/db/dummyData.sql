@@ -28,6 +28,28 @@ VALUES ('1', 123456789);
 INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
 VALUES (2, 'PENDING', 'blah blah', 'SPOUSE', '2023-01-13 20:38:13.000000', 1, 123456789);
 
+
+INSERT INTO public.divorce (id, application_timestamp, close_timestamp, contract_details, notarial_act_number, status,
+                            lead_lawyer_id)
+VALUES (2, '2023-02-11 14:36:23.000000', null, 'test2', null, 'DRAFT', null);
+
+INSERT INTO public.user_divorce (user_id, divorce_id)
+VALUES (1234567891, 2);
+
+UPDATE public."divorceStatement"
+SET faculty = 'SPOUSE_TWO'
+WHERE id = 2;
+
+INSERT INTO public."divorceStatement" (id, choice, comment, faculty, timestamp, divorce_id, person_id)
+VALUES (3, 'OBJECTION', 'objection', 'SPOUSE_ONE', '2023-02-11 14:38:27.000000', 2, 1234567891);
+
+INSERT INTO public.user_divorce (user_id, divorce_id)
+VALUES (123456789, 2);
+
+
+
+
+
 --
 -- INSERT INTO public.user_divorce (user_id, divorce_id)
 -- VALUES (123789, 1);

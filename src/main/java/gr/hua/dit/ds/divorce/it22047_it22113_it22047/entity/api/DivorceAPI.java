@@ -1,16 +1,47 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api;
 
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatus;
+
+import java.util.Date;
+
 public class DivorceAPI {
 
     private Integer id;
-    private boolean draft;
+    // private boolean draft;
+    private DivorceStatus status;
     private String contractDetails;
+    private Date applicationDate;
 
     private Integer lawyerLeadTaxNumber;
     private Integer lawyerTwoTaxNumber;
     private Integer spouseOneTaxNumber;
     private Integer spouseTwoTaxNumber;
     private Integer notaryTaxNumber;
+
+
+    public DivorceAPI(Divorce divorce) {
+        id = divorce.getId();
+        status = divorce.getStatus();
+        contractDetails = divorce.getContractDetails();
+        applicationDate = divorce.getApplicationDate();
+        try {
+            lawyerLeadTaxNumber = divorce.getLeadLawyer().getTaxNumber();
+        } catch (NullPointerException e) {
+        }
+        try {
+            notaryTaxNumber = divorce.getNotary().getTaxNumber();
+        } catch (NullPointerException e) {
+        }
+        try {
+            spouseOneTaxNumber = divorce.getSpouseOne().getTaxNumber();
+        } catch (NullPointerException e) {
+        }
+        try {
+            spouseTwoTaxNumber = divorce.getSpouseTwo().getTaxNumber();
+        } catch (NullPointerException e) {
+        }
+    }
 
     public Integer getNotaryTaxNumber() {
         return notaryTaxNumber;
@@ -68,11 +99,23 @@ public class DivorceAPI {
         this.spouseTwoTaxNumber = spouseTwoTaxNumber;
     }
 
-    public boolean isDraft() {
-        return draft;
+    public DivorceStatus getStatus() {
+        return status;
     }
 
-    public void setDraft(boolean draft) {
-        this.draft = draft;
+    public void setStatus(DivorceStatus status) {
+        this.status = status;
+    }
+
+    public boolean isDraft() {
+        return status.equals(DivorceStatus.DRAFT);
+    }
+
+    public Date getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(Date applicationDate) {
+        this.applicationDate = applicationDate;
     }
 }
