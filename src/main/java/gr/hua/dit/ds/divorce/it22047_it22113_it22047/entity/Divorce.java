@@ -33,8 +33,8 @@ public class Divorce implements Serializable {
     private String contractDetails;
 
 
-//    cascade={CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.REMOVE,CascadeType.DETACH}
-    @OneToMany(mappedBy = "divorce",fetch = FetchType.LAZY, cascade= {CascadeType.PERSIST,
+    //    cascade={CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.REMOVE,CascadeType.DETACH}
+    @OneToMany(mappedBy = "divorce", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
             CascadeType.DETACH, CascadeType.REFRESH}) //**
 //    @JoinColumn(name = "divorceStatement_divorce_id")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -61,28 +61,59 @@ public class Divorce implements Serializable {
         this.applicationDate = applicationDate;
     }
 
-    public Divorce() {}
+    public Divorce() {
+    }
 
-    public boolean isAllStatementsAccepted(){
-        for(DivorceStatement divorceStatement : statement){
-            if(!divorceStatement.equals(DivorceStatementChoice.ACCEPT)){
+    public boolean isAllStatementsAccepted() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (!divorceStatement.equals(DivorceStatementChoice.ACCEPT)) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean isReadyForNotarialAct(){
+    public boolean search(String query) {
+        List<User> searchUsers = new ArrayList<>();
+        searchUsers.add(leadLawyer);
+        searchUsers.add(getLawyer());
+        searchUsers.add(getNotary());
+        searchUsers.add(getSpouseOne());
+        searchUsers.add(getSpouseTwo());
+
+        for (User u : searchUsers) {
+            if(u!=null){
+                String s = u.getFullName();
+                if (s.toLowerCase().contains(query.toLowerCase())) {
+                    return true;
+                }
+                Integer i = u.getTaxNumber();
+                if (i.toString().contains(query)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean check(String query, String value) {
+        if (value.toLowerCase().contains(query.toLowerCase())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isReadyForNotarialAct() {
         int countAcceptStatements = 0;
-        for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPT)){
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPT)) {
                 countAcceptStatements++;
             }
         }
         return countAcceptStatements == 3;
     }
 
-    public boolean isClosed(){
+    public boolean isClosed() {
         return status.equals(DivorceStatus.COMPLETED) || status.equals(DivorceStatus.CANCELLED);
     }
 
@@ -118,7 +149,9 @@ public class Divorce implements Serializable {
         this.contractDetails = contractDetails;
     }
 
-    public List<DivorceStatement> getStatement() {return statement;}
+    public List<DivorceStatement> getStatement() {
+        return statement;
+    }
 
     public void setStatement(List<DivorceStatement> statement) {
         this.statement = statement;
@@ -161,61 +194,61 @@ public class Divorce implements Serializable {
 //        return Objects.hash(getId(), getStatus(), getLeadLawyer(), getContractDetails(), getStatement(), getNotarialDeedNumber(), getCloseDate(), getDate());
 //    }
 
-    public boolean isStatementsValid(){
+    public boolean isStatementsValid() {
         List<Integer> addedPersons = new ArrayList<>();
         for (DivorceStatement statement : statement) {
-            if(addedPersons.contains(statement.getPerson().getTaxNumber())){
+            if (addedPersons.contains(statement.getPerson().getTaxNumber())) {
                 throw new IllegalArgumentException("Person with tax number " + statement.getPerson().getTaxNumber() + " is already added on that divorce application as involved party");
             } else {
                 addedPersons.add(statement.getPerson().getTaxNumber());
             }
-            if(!statement.getChoice().equals(DivorceStatementChoice.PENDING)){
-                throw new IllegalArgumentException("Statement status for "+statement.getPerson().getTaxNumber() + " is " + statement.getChoice() + " should be 'PENDING' when creating divorce application");
+            if (!statement.getChoice().equals(DivorceStatementChoice.PENDING)) {
+                throw new IllegalArgumentException("Statement status for " + statement.getPerson().getTaxNumber() + " is " + statement.getChoice() + " should be 'PENDING' when creating divorce application");
             }
         }
         return true;
     }
 
-    public User getNotary (){
-        for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getFaculty().equals(Faculty.NOTARY)){
+    public User getNotary() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.NOTARY)) {
                 return divorceStatement.getPerson();
             }
         }
         return null;
     }
 
-    public List<User> getSpouses (){
+    public List<User> getSpouses() {
         List<User> spouses = new ArrayList<>();
-        for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getFaculty().equals(Faculty.SPOUSE)){
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.SPOUSE)) {
                 spouses.add(divorceStatement.getPerson());
             }
         }
         return spouses;
     }
 
-    public User getSpouseOne (){
-        for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getFaculty().equals(Faculty.SPOUSE_ONE)){
+    public User getSpouseOne() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.SPOUSE_ONE)) {
                 return divorceStatement.getPerson();
             }
         }
         return null;
     }
 
-    public User getSpouseTwo (){
-        for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getFaculty().equals(Faculty.SPOUSE_TWO)){
+    public User getSpouseTwo() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.SPOUSE_TWO)) {
                 return divorceStatement.getPerson();
             }
         }
         return null;
     }
 
-    public User getLawyer (){
-        for(DivorceStatement divorceStatement : statement){
-            if(divorceStatement.getFaculty().equals(Faculty.LAWYER)){
+    public User getLawyer() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.LAWYER)) {
                 return divorceStatement.getPerson();
             }
         }

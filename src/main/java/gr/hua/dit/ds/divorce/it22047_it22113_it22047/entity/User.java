@@ -168,6 +168,12 @@ public class User implements Serializable {
     }
 
     public String getFullName() {
+        if (firstName ==null) {
+            return lastName;
+        }
+        if (lastName ==null) {
+            return firstName;
+        }
         return this.firstName + " " + this.lastName;
     }
 }

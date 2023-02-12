@@ -34,8 +34,6 @@ public class DivorceController {
     @Autowired
     DivorceDAO divorceDAO;
 
-
-
     /**
      * Returns divorces of the user with the given tax number
      * @param taxNumber we might want to remove the param after security is implemented
@@ -56,9 +54,23 @@ public class DivorceController {
      */
     @GetMapping("/findById")
     public DivorceAPIResponse findById(Integer id) throws NoSuchElementException {
+        //Check access to divorce
         return new DivorceAPIResponse(divorceRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Divorce with id " + id + " not found")));
     }
-    
+
+    /**
+     * Returns divorces that mach the given criteria
+     * @param query divorce query
+     * @param taxNumber we might want to remove the param after security is implemented
+     * @return
+     */
+    @GetMapping("/search")
+    public List<DivorceAPIResponseConcise> search (String query, Integer taxNumber) {
+        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
+                .getDivorces().stream().filter(d-> d.search(query))
+                .map(d-> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
+    }
+
     @GetMapping("/findAll")
     public List<Divorce> findAll() {
         return divorceRepo.findAll();
