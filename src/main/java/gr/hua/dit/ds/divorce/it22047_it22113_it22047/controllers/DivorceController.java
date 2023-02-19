@@ -93,8 +93,42 @@ public class DivorceController {
     }
 
     @GetMapping("/findAll")
-    public List<Divorce> findAll() {
-        return divorceRepo.findAll();
+    public List<DivorceAPIResponseConcise> findAll() {
+        List<DivorceAPIResponseConcise> response = new ArrayList<>();
+        divorceRepo.findAll().forEach(d -> response.add(new DivorceAPIResponseConcise(d)));
+        return response;
+    }
+
+    /**
+     * Edit divorce
+     */
+    @PostMapping("/edit")
+//    @PreAuthorize("hasRole('LAWYER')
+    public DivorceAPIResponse edit(@RequestBody DivorceAPIRequest divorceEdits) throws UserNotFoundException, UserWithWrongRoleException, FewerDivorceStatementsException, DivorceStatusException {
+        //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
+
+        //3. todo security check divorce status (if it is in the right stage)
+
+        divorceEdits.completenessCheck();
+        return new DivorceAPIResponse(divorceService.editDivorce(divorceEdits));
+    }
+
+    //FIXME Edit divorce without entering all data for related objects (divorceStatement, person, etc)
+
+    /**
+     * Create divorce
+     * @param divorce
+     * @return
+     * @throws FewerDivorceStatementsException
+     * @throws DivorceStatusException
+     * @throws UserNotFoundException
+     * @throws UserWithWrongRoleException
+     */
+    @PostMapping("/save")
+//    @PreAuthorize("hasRole('LAWYER')
+    public DivorceAPIResponse save(@RequestBody DivorceAPIRequest divorce) throws FewerDivorceStatementsException, DivorceStatusException, UserNotFoundException, UserWithWrongRoleException {
+        //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
+        return new DivorceAPIResponse(divorceService.createDivorce(divorce));
     }
 
     /**
@@ -171,28 +205,6 @@ public class DivorceController {
         };
 
         return divorces.stream().filter(d -> containsName.test(d, name)).collect(Collectors.toList());
-    }
-
-
-    @PostMapping("/edit")
-//    @PreAuthorize("hasRole('LAWYER')
-    public DivorceAPIResponse edit(@RequestBody DivorceAPIRequest divorceEdits) throws UserNotFoundException, UserWithWrongRoleException, FewerDivorceStatementsException, DivorceStatusException {
-        //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
-
-        //3. todo security check divorce status (if it is in the right stage)
-
-        divorceEdits.completenessCheck();
-        return new DivorceAPIResponse(divorceService.editDivorce(divorceEdits));
-    }
-
-    //FIXME Edit divorce without entering all data for related objects (divorceStatement, person, etc)
-
-
-    @PostMapping("/save")
-//    @PreAuthorize("hasRole('LAWYER')
-    public DivorceAPIResponse save(@RequestBody DivorceAPIRequest divorce) throws FewerDivorceStatementsException, DivorceStatusException, UserNotFoundException, UserWithWrongRoleException {
-        //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
-        return new DivorceAPIResponse(divorceService.createDivorce(divorce));
     }
 
     @PostMapping("/addStatement")
