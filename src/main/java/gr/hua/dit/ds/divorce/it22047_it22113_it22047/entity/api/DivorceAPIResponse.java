@@ -3,6 +3,7 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 
 import java.util.Date;
+import java.util.List;
 
 public class DivorceAPIResponse extends DivorceAPIResponseConcise {
 
@@ -12,6 +13,9 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
     private String lawyerLeadName;
     private String lawyerName;
     private String notaryName;
+    private String notarialDeedNumber;
+
+    private List<DivorceStatementAPIResponse> statements;
 
     public DivorceAPIResponse(Integer id, String status, String spouseOneName, String spouseTwoName) {
         super(id, status, spouseOneName, spouseTwoName);
@@ -29,7 +33,7 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
         this.contractDetails = divorce.getContractDetails();
         this.date = divorce.getApplicationDate();
         try {
-            this.lawyerLeadName = divorce.getLeadLawyer().getFullName();
+            this.lawyerLeadName = divorce.getLawyerLead().getFullName();
         } catch (NullPointerException e) {
         }
         try {
@@ -37,7 +41,11 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
         } catch (NullPointerException e) {
         }
         try {
-            this.lawyerName = divorce.getLawyer().getFullName();
+            this.lawyerName = divorce.getLawyerTwo().getFullName();
+        } catch (NullPointerException e) {
+        }
+        try {
+            this.notarialDeedNumber = divorce.getNotarialDeedNumber();
         } catch (NullPointerException e) {
         }
     }
@@ -80,6 +88,14 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
 
     public void setLawyerName(String lawyerName) {
         this.lawyerName = lawyerName;
+    }
+
+    public String getNotarialDeedNumber() {
+        return notarialDeedNumber;
+    }
+
+    public void setNotarialDeedNumber(String notarialDeedNumber) {
+        this.notarialDeedNumber = notarialDeedNumber;
     }
 }
 

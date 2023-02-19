@@ -7,7 +7,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Role;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.UserStatus;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
-import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.EmailSenderService;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -101,7 +101,7 @@ public class UserController {
 
         senderService.sendSimpleEmail(email,
                 "Invitation to divorce application",
-                "Message to person with tax number: "+ taxNumber+" \nYou have been invited to a divorce application. Please register at http://localhost:4200/register");
+                "Message to person with tax number: "+ taxNumber+" \nYou have been invited to a divorce application. Please register at http://localhost:3000/register");
         return "Invitation sent";
     }
 }

@@ -1,6 +1,8 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.DivorceAPIRequest;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -54,10 +56,15 @@ public class DivorceStatement implements Serializable {
     }
 
     public DivorceStatement(User person, Faculty faculty, DivorceStatementChoice choice, Divorce divorce) {
+        this(person,faculty, divorce);
+        this.divorce = divorce;
+    }
+
+    public DivorceStatement(User person, Faculty faculty, Divorce divorce){
         this.person = person;
         this.faculty = faculty;
-        this.choice = choice;
         this.divorce = divorce;
+        this.choice = DivorceStatementChoice.PENDING;
     }
 
     public DivorceStatement() {

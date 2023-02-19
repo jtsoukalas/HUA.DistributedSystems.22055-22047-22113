@@ -1,4 +1,4 @@
-package gr.hua.dit.ds.divorce.it22047_it22113_it22047.service;
+package gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSenderImpl;

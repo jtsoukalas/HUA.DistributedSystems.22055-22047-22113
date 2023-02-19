@@ -2,16 +2,13 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatus;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Faculty;
 
-import java.util.Date;
-
-public class DivorceAPI {
+public class DivorceAPIRequest {
 
     private Integer id;
-    // private boolean draft;
     private DivorceStatus status;
     private String contractDetails;
-    private Date applicationDate;
 
     private Integer lawyerLeadTaxNumber;
     private Integer lawyerTwoTaxNumber;
@@ -19,14 +16,12 @@ public class DivorceAPI {
     private Integer spouseTwoTaxNumber;
     private Integer notaryTaxNumber;
 
-
-    public DivorceAPI(Divorce divorce) {
+    public DivorceAPIRequest (Divorce divorce) {
         id = divorce.getId();
         status = divorce.getStatus();
         contractDetails = divorce.getContractDetails();
-        applicationDate = divorce.getApplicationDate();
         try {
-            lawyerLeadTaxNumber = divorce.getLeadLawyer().getTaxNumber();
+            lawyerLeadTaxNumber = divorce.getLawyerLead().getTaxNumber();
         } catch (NullPointerException e) {
         }
         try {
@@ -41,6 +36,40 @@ public class DivorceAPI {
             spouseTwoTaxNumber = divorce.getSpouseTwo().getTaxNumber();
         } catch (NullPointerException e) {
         }
+    }
+
+    public DivorceAPIRequest(Integer id, DivorceStatus status, String contractDetails, Integer lawyerLeadTaxNumber, Integer lawyerTwoTaxNumber, Integer spouseOneTaxNumber, Integer spouseTwoTaxNumber, Integer notaryTaxNumber) {
+        this.id = id;
+        this.status = status;
+        this.contractDetails = contractDetails;
+        this.lawyerLeadTaxNumber = lawyerLeadTaxNumber;
+        this.lawyerTwoTaxNumber = lawyerTwoTaxNumber;
+        this.spouseOneTaxNumber = spouseOneTaxNumber;
+        this.spouseTwoTaxNumber = spouseTwoTaxNumber;
+        this.notaryTaxNumber = notaryTaxNumber;
+    }
+
+    public Integer getUserTaxNumber(Faculty faculty){
+        switch (faculty) {
+            case LAWYER_LEAD:
+            case LAWYER_TWO:
+                return lawyerLeadTaxNumber;
+            case NOTARY:
+                return notaryTaxNumber;
+            case SPOUSE_ONE:
+                return spouseOneTaxNumber;
+            case SPOUSE_TWO:
+                return spouseTwoTaxNumber;
+            default:
+                return null;
+        }
+    }
+
+    public void completenessCheck() {
+        if(id != null && status != null && contractDetails != null && lawyerLeadTaxNumber != null && lawyerTwoTaxNumber != null && spouseOneTaxNumber != null && spouseTwoTaxNumber != null && notaryTaxNumber != null) {
+            return;
+        }
+        throw new IllegalArgumentException("DivorceAPIRequest is not complete");
     }
 
     public Integer getNotaryTaxNumber() {
@@ -110,12 +139,4 @@ public class DivorceAPI {
     public boolean isDraft() {
         return status.equals(DivorceStatus.DRAFT);
     }
-
-    public Date getApplicationDate() {
-        return applicationDate;
     }
-
-    public void setApplicationDate(Date applicationDate) {
-        this.applicationDate = applicationDate;
-    }
-}

@@ -3,13 +3,12 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserWithWrongRoleException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "divorce")
@@ -64,6 +63,7 @@ public class Divorce implements Serializable {
     public Divorce() {
     }
 
+
     public boolean isAllStatementsAccepted() {
         for (DivorceStatement divorceStatement : statement) {
             if (!divorceStatement.equals(DivorceStatementChoice.ACCEPT)) {
@@ -76,13 +76,13 @@ public class Divorce implements Serializable {
     public boolean search(String query) {
         List<User> searchUsers = new ArrayList<>();
         searchUsers.add(leadLawyer);
-        searchUsers.add(getLawyer());
+        searchUsers.add(getLawyerTwo());
         searchUsers.add(getNotary());
         searchUsers.add(getSpouseOne());
         searchUsers.add(getSpouseTwo());
 
         for (User u : searchUsers) {
-            if(u!=null){
+            if (u != null) {
                 String s = u.getFullName();
                 if (s.toLowerCase().contains(query.toLowerCase())) {
                     return true;
@@ -93,13 +93,18 @@ public class Divorce implements Serializable {
                 }
             }
         }
-        return false;
-    }
 
-    private boolean check(String query, String value) {
-        if (value.toLowerCase().contains(query.toLowerCase())) {
-            return true;
+        if (notarialDeedNumber != null) {
+            if (notarialDeedNumber.toLowerCase().contains(query.toLowerCase())) {
+                return true;
+            }
         }
+        if (contractDetails != null) {
+            if (contractDetails.toLowerCase().contains(query.toLowerCase())) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -133,12 +138,12 @@ public class Divorce implements Serializable {
         this.status = status;
     }
 
-    public User getLeadLawyer() {
+    public User getLawyerLead() {
         return leadLawyer;
     }
 
-    public void setLeadLawyer(User leadLawyer) {
-        this.leadLawyer = leadLawyer;
+    public void setLawyerLead(User lawyerLead) {
+        this.leadLawyer = lawyerLead;
     }
 
     public String getContractDetails() {
@@ -186,27 +191,36 @@ public class Divorce implements Serializable {
 //        if (this == o) return true;
 //        if (!(o instanceof Divorce)) return false;
 //        Divorce divorce = (Divorce) o;
-//        return getId().equals(divorce.getId()) && getStatus() == divorce.getStatus() && getLeadLawyer().equals(divorce.getLeadLawyer()) && Objects.equals(getContractDetails(), divorce.getContractDetails()) && Objects.equals(getStatement(), divorce.getStatement()) && Objects.equals(getNotarialDeedNumber(), divorce.getNotarialDeedNumber()) && Objects.equals(getCloseDate(), divorce.getCloseDate()) && Objects.equals(getDate(), divorce.getDate());
+//        return getId().equals(divorce.getId()) && getStatus() == divorce.getStatus() && getLawyerLead().equals(divorce.getLawyerLead()) && Objects.equals(getContractDetails(), divorce.getContractDetails()) && Objects.equals(getStatement(), divorce.getStatement()) && Objects.equals(getNotarialDeedNumber(), divorce.getNotarialDeedNumber()) && Objects.equals(getCloseDate(), divorce.getCloseDate()) && Objects.equals(getDate(), divorce.getDate());
 //    }
 //
 //    @Override
 //    public int hashCode() {
-//        return Objects.hash(getId(), getStatus(), getLeadLawyer(), getContractDetails(), getStatement(), getNotarialDeedNumber(), getCloseDate(), getDate());
+//        return Objects.hash(getId(), getStatus(), getLawyerLead(), getContractDetails(), getStatement(), getNotarialDeedNumber(), getCloseDate(), getDate());
 //    }
 
-    public boolean isStatementsValid() {
-        List<Integer> addedPersons = new ArrayList<>();
-        for (DivorceStatement statement : statement) {
-            if (addedPersons.contains(statement.getPerson().getTaxNumber())) {
-                throw new IllegalArgumentException("Person with tax number " + statement.getPerson().getTaxNumber() + " is already added on that divorce application as involved party");
-            } else {
-                addedPersons.add(statement.getPerson().getTaxNumber());
-            }
-            if (!statement.getChoice().equals(DivorceStatementChoice.PENDING)) {
-                throw new IllegalArgumentException("Statement status for " + statement.getPerson().getTaxNumber() + " is " + statement.getChoice() + " should be 'PENDING' when creating divorce application");
+//    public boolean isStatementsValid() {
+//        List<Integer> addedPersons = new ArrayList<>();
+//        for (DivorceStatement statement : statement) {
+//            if (addedPersons.contains(statement.getPerson().getTaxNumber())) {
+//                throw new IllegalArgumentException("Person with tax number " + statement.getPerson().getTaxNumber() + " is already added on that divorce application as involved party");
+//            } else {
+//                addedPersons.add(statement.getPerson().getTaxNumber());
+//            }
+//            if (!statement.getChoice().equals(DivorceStatementChoice.PENDING)) {
+//                throw new IllegalArgumentException("Statement status for " + statement.getPerson().getTaxNumber() + " is " + statement.getChoice() + " should be 'PENDING' when creating divorce application");
+//            }
+//        }
+//        return true;
+//    }
+
+    public User getUser(Faculty faculty) throws UserWithWrongRoleException {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(faculty)) {
+                return divorceStatement.getPerson();
             }
         }
-        return true;
+        throw new UserWithWrongRoleException("User with role " + faculty + " is not found on divorce application");
     }
 
     public User getNotary() {
@@ -246,9 +260,9 @@ public class Divorce implements Serializable {
         return null;
     }
 
-    public User getLawyer() {
+    public User getLawyerTwo() {
         for (DivorceStatement divorceStatement : statement) {
-            if (divorceStatement.getFaculty().equals(Faculty.LAWYER)) {
+            if (divorceStatement.getFaculty().equals(Faculty.LAWYER_TWO)) {
                 return divorceStatement.getPerson();
             }
         }

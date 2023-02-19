@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +57,7 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "divorce_id"))
     @JsonBackReference
-    private List<Divorce> divorces;
+    private List<Divorce> divorces = new ArrayList<>();
 
     @Column(name="enabled")
     @NotNull
@@ -175,5 +176,14 @@ public class User implements Serializable {
             return firstName;
         }
         return this.firstName + " " + this.lastName;
+    }
+
+    public void addDivorce(Divorce divorce) {
+        if (this.divorces== null) {
+            this.divorces = new ArrayList<>();
+        } else if (this.divorces.contains(divorce)) {
+            return;
+        }
+        this.divorces.add(divorce);
     }
 }

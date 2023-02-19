@@ -3,19 +3,23 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.*;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.*;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.DivorceStatusException;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.FewerDivorceStatementsException;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserNotFoundException;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserWithWrongRoleException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStatementRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data.DivorceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
+
+import static javax.swing.UIManager.get;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -34,20 +38,36 @@ public class DivorceController {
     @Autowired
     DivorceDAO divorceDAO;
 
+    @Autowired
+    DivorceService divorceService;
+
     /**
      * Returns divorces of the user with the given tax number
+     *
      * @param taxNumber we might want to remove the param after security is implemented
+     * @param faculty  the faculty of the user in order to filter the divorces
      * @return List of divorces
      */
     @GetMapping("/myDivorces")
 //    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE')")
-    public List<DivorceAPIResponseConcise> myDivorces(Integer taxNumber) {
-        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
-                .getDivorces().stream().map(d-> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
+    public List<DivorceAPIResponseConcise> myDivorces(Integer taxNumber, Faculty faculty) throws UserNotFoundException {
+        // TODO Security check if the user is allowed to see the divorces
+        if (taxNumber == null || faculty == null) {
+            throw new IllegalArgumentException("TaxNumber and faculty must be provided");
+        }
+        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UserNotFoundException(taxNumber))
+                .getDivorces().stream().filter(d -> {
+                    try {
+                        return d.getUser(faculty).getTaxNumber().equals(taxNumber);
+                    } catch (UserWithWrongRoleException e) {
+                        return false;
+                    }
+                }).map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
     }
 
     /**
      * Returns divorce details for the given id
+     *
      * @param id
      * @return
      * @throws NoSuchElementException is id is not found
@@ -60,20 +80,47 @@ public class DivorceController {
 
     /**
      * Returns divorces that mach the given criteria
-     * @param query divorce query
+     *
+     * @param query     divorce query
      * @param taxNumber we might want to remove the param after security is implemented
      * @return
      */
     @GetMapping("/search")
-    public List<DivorceAPIResponseConcise> search (String query, Integer taxNumber) {
+    public List<DivorceAPIResponseConcise> search(String query, Integer taxNumber) {
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
-                .getDivorces().stream().filter(d-> d.search(query))
-                .map(d-> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
+                .getDivorces().stream().filter(d -> d.search(query))
+                .map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
     }
 
     @GetMapping("/findAll")
     public List<Divorce> findAll() {
         return divorceRepo.findAll();
+    }
+
+    /**
+     * Deletes the divorce with the given id if status is not COMPLETED
+     * @param id
+     */
+    @DeleteMapping("/delete")
+    //@PreAuthorize("hasRole('LAWYER')")
+    public void delete(Integer id) {
+        //TODO Security check if the user is allowed to delete the divorce
+        //TODO Implement
+        divorceRepo.deleteById(id);
+    }
+
+    @PostMapping("/emailInvolvedPartis")
+    //@PreAuthorize("hasRole('LAWYER')")
+    public void emailInvolvedPartis(Integer id) {
+        //TODO Security check if the user is allowed to delete the divorce
+        //TODO Implement
+    }
+
+    @PostMapping("/notarialAccept")
+    //@PreAuthorize("hasRole('NOTARY')")
+    public void notarialAccept(Integer id, String notarialDeedNumber) {
+        //TODO Security check if the user is allowed to delete the divorce
+        //TODO Implement
     }
 
     @GetMapping("/adminFind")
@@ -129,49 +176,23 @@ public class DivorceController {
 
     @PostMapping("/edit")
 //    @PreAuthorize("hasRole('LAWYER')
-    public Divorce edit(@RequestBody DivorceAPI divorceEdits) {
+    public DivorceAPIResponse edit(@RequestBody DivorceAPIRequest divorceEdits) throws UserNotFoundException, UserWithWrongRoleException, FewerDivorceStatementsException, DivorceStatusException {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
 
         //3. todo security check divorce status (if it is in the right stage)
 
-
-        return saveDivorce(divorceEdits, divorceRepo.findById(divorceEdits.getId()).orElseThrow(()->new IllegalArgumentException("Divorce wasn't found in DB")));
+        divorceEdits.completenessCheck();
+        return new DivorceAPIResponse(divorceService.editDivorce(divorceEdits));
     }
 
     //FIXME Edit divorce without entering all data for related objects (divorceStatement, person, etc)
 
+
     @PostMapping("/save")
 //    @PreAuthorize("hasRole('LAWYER')
-    public Divorce save(@RequestBody Divorce divorce) {
+    public DivorceAPIResponse save(@RequestBody DivorceAPIRequest divorce) throws FewerDivorceStatementsException, DivorceStatusException, UserNotFoundException, UserWithWrongRoleException {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
-
-        //3. todo security check divorce status (if it is in the right stage)
-
-        if (divorceRepo.findById(divorce.getId()).orElse(null).isClosed()) {
-            if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
-                throw new IllegalStateException("Divorce is already completed");
-            } else {
-                throw new IllegalStateException("Divorce is cancelled");
-            }
-        }
-
-        if (divorce.getStatus().equals(DivorceStatus.COMPLETED) || divorce.getStatus().equals(DivorceStatus.CANCELLED)) {
-            throw new IllegalStateException("Divorce status cannot be completed or cancelled by a lawyer");
-        }
-
-
-        if (!divorce.isStatementsValid()) {
-            throw new IllegalArgumentException("Divorce statements are not valid. Check for multiple instances of the same person");
-        }
-
-        createDivorceStatementsIfNotExist(divorce.getStatement(), divorce);
-
-
-//        changeAllStatementsToPending(divorce.getStatement());
-
-//        divorceRepo.findById(divorce.getId()).orElse(null).setDate(new Date (System.currentTimeMillis()));
-
-        return divorceRepo.save(divorce);
+        return new DivorceAPIResponse(divorceService.createDivorce(divorce));
     }
 
     @PostMapping("/addStatement")
@@ -202,120 +223,4 @@ public class DivorceController {
         }
         return divorce;
     }
-
-    private void changeAllStatementsToPending(List<DivorceStatement> statements) {
-        for (DivorceStatement statement : statements) {
-            DivorceStatement s = divorceStatementRepo.findById(statement.getId()).orElseThrow(()
-                    -> new NoSuchElementException("DivorceStatement with id " + statement.getId() + " not found"));
-            s.setChoice(DivorceStatementChoice.PENDING);
-            s.setTimestamp(null);
-            s.setComment(null);
-        }
-    }
-
-    private void createDivorceStatementsIfNotExist(List<DivorceStatement> statements, Divorce divorce) {
-        List<DivorceStatement> newStatements = new ArrayList<>();
-        for (DivorceStatement statement : statements) {
-            if (statement.getId() == null) {
-                newStatements.add(divorceStatementRepo.save(statement));
-            }
-//            if (divorceStatementRepo.findById(statement.getId())
-//                    .orElseThrow(() -> new NoSuchElementException("Divorce statement with id: " + statement.getId() + " wasn't found"))
-//                    .equals(statement)) {
-//                newStatements.add(statement);
-//            } else {
-//               throw new IllegalArgumentException("Divorce statement with id: " + statement.getId() + " already exists and doesn't match the one provided");
-//            }
-
-            newStatements.add(divorceStatementRepo.save(statement));
-        }
-        divorce.setStatement(newStatements);
-    }
-
-    /**
-     * Prepare and save divorce object to DB
-     *
-     * @param divorceSource object with source data
-     * @param divorce       object subject to changes, give NULL if new Divorce
-     */
-    private Divorce saveDivorce(DivorceAPI divorceSource, @Nullable Divorce divorce) {
-        Divorce finalDivorce;
-
-        if (divorce == null) {
-            finalDivorce = divorceRepo.save(new Divorce());
-        } else {
-            finalDivorce=divorceRepo.findById(divorceSource.getId())
-                    .orElseThrow(()-> new NoSuchElementException("Given divorce wasn't found in DB"));
-            //Check if it's closed
-            if (finalDivorce.isClosed()) {
-                if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
-                    throw new IllegalStateException("Divorce is already completed. Changes are not allowed");
-                } else {
-                    throw new IllegalStateException("Divorce is cancelled. Changes are not allowed");
-                }
-            }
-        }
-
-        if (divorce == null || divorceSource.isDraft()) {
-            finalDivorce.setLeadLawyer(checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.LAWYER));
-
-            List<DivorceStatement> finalStatements = new ArrayList<>();
-
-            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
-                    checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.LAWYER),
-                    Faculty.LAWYER, DivorceStatementChoice.PENDING, finalDivorce)));
-
-            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
-                    checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.SPOUSE),
-                    Faculty.SPOUSE, DivorceStatementChoice.PENDING, finalDivorce)));
-
-            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
-                    checkRole(divorceSource.getLawyerLeadTaxNumber(), Faculty.SPOUSE),
-                    Faculty.SPOUSE, DivorceStatementChoice.PENDING, finalDivorce)));
-
-            finalStatements.add(divorceStatementRepo.save(new DivorceStatement(
-                    checkRole(divorceSource.getNotaryTaxNumber(), Faculty.NOTARY),
-                    Faculty.NOTARY, DivorceStatementChoice.INACTIVE, finalDivorce)));
-
-            finalDivorce.setStatement(finalStatements);
-        }
-
-        finalDivorce.setContractDetails(divorceSource.getContractDetails());
-
-        if (divorceSource.isDraft()) {
-            if (divorce!=null && !divorce.getStatus().equals(DivorceStatus.DRAFT)){
-                throw new IllegalStateException("Divorce is in pending mode and cannot be changed to draft");
-            }
-            divorce.setStatus(DivorceStatus.DRAFT);
-        } else {
-            divorce.setStatus(DivorceStatus.PENDING);
-            if(divorce==null){
-                finalDivorce.setApplicationDate(new Date(System.currentTimeMillis()));
-            }
-            //TODO Inform involved parties in order to review the divorce
-        }
-        return divorceRepo.save(finalDivorce);
-    }
-
-    /**
-     * Checks role for given tax number
-     *
-     * @param taxNumber to search on DB
-     * @param faculty   to cross-check
-     * @return User instance from DB
-     * @throws IllegalArgumentException when tax number does not exist in DB or when role isn't assigned
-     */
-    private User checkRole(Integer taxNumber, Faculty faculty) throws IllegalArgumentException {
-
-        User user = userRepo.findByTaxNumber(taxNumber)
-                .orElseThrow(() -> new IllegalArgumentException("User with role: " + faculty.name() + " with tax number: " + taxNumber + " not found."));
-
-        if (!user.getRoles().contains(faculty.name())) {
-            throw new IllegalArgumentException("User with tax number: " + taxNumber + " does not have the role: " + faculty.name());
-        }
-
-        return user;
-    }
-
-
 }
