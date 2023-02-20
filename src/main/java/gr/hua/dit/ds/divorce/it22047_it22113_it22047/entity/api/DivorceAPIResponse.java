@@ -1,6 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatementChoice;
 
 import java.util.Date;
 import java.util.List;
@@ -15,19 +16,13 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
     private String notaryName;
     private String notarialDeedNumber;
 
+    private DivorceStatementChoice lawyerTwoChoice;
+    private DivorceStatementChoice spouseOneChoice;
+    private DivorceStatementChoice spouseTwoChoice;
+    private DivorceStatementChoice notaryChoice;
+
     private List<DivorceStatementAPIResponse> statements;
 
-    public DivorceAPIResponse(Integer id, String status, String spouseOneName, String spouseTwoName) {
-        super(id, status, spouseOneName, spouseTwoName);
-    }
-    public DivorceAPIResponse(Integer id, String status, String spouseOneName, String spouseTwoName, String contractDetails, Date applicationDate, String lawyerLeadName, String lawyerName, String notaryName) {
-        super(id, status, spouseOneName, spouseTwoName);
-        this.contractDetails = contractDetails;
-        this.date = applicationDate;
-        this.lawyerLeadName = lawyerLeadName;
-        this.lawyerName = lawyerName;
-        this.notaryName = notaryName;
-    }
     public DivorceAPIResponse (Divorce divorce){
         super(divorce);
         this.contractDetails = divorce.getContractDetails();
@@ -46,6 +41,22 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
         }
         try {
             this.notarialDeedNumber = divorce.getNotarialDeedNumber();
+        } catch (NullPointerException e) {
+        }
+        try {
+            this.lawyerTwoChoice = divorce.getLawyerTwoChoice();
+        } catch (NullPointerException e) {
+        }
+        try {
+            this.spouseOneChoice = divorce.getSpouseOneChoice();
+        } catch (NullPointerException e) {
+        }
+        try {
+            this.spouseTwoChoice = divorce.getSpouseTwoChoice();
+        } catch (NullPointerException e) {
+        }
+        try {
+            this.notaryChoice = divorce.getNotaryChoice();
         } catch (NullPointerException e) {
         }
     }
@@ -96,6 +107,46 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
 
     public void setNotarialDeedNumber(String notarialDeedNumber) {
         this.notarialDeedNumber = notarialDeedNumber;
+    }
+
+    public DivorceStatementChoice getLawyerTwoChoice() {
+        return lawyerTwoChoice;
+    }
+
+    public void setLawyerTwoChoice(DivorceStatementChoice lawyerTwoChoice) {
+        this.lawyerTwoChoice = lawyerTwoChoice;
+    }
+
+    public DivorceStatementChoice getSpouseOneChoice() {
+        return spouseOneChoice;
+    }
+
+    public void setSpouseOneChoice(DivorceStatementChoice spouseOneChoice) {
+        this.spouseOneChoice = spouseOneChoice;
+    }
+
+    public DivorceStatementChoice getSpouseTwoChoice() {
+        return spouseTwoChoice;
+    }
+
+    public void setSpouseTwoChoice(DivorceStatementChoice spouseTwoChoice) {
+        this.spouseTwoChoice = spouseTwoChoice;
+    }
+
+    public DivorceStatementChoice getNotaryChoice() {
+        return notaryChoice;
+    }
+
+    public void setNotaryChoice(DivorceStatementChoice notaryChoice) {
+        this.notaryChoice = notaryChoice;
+    }
+
+    public List<DivorceStatementAPIResponse> getStatements() {
+        return statements;
+    }
+
+    public void setStatements(List<DivorceStatementAPIResponse> statements) {
+        this.statements = statements;
     }
 }
 

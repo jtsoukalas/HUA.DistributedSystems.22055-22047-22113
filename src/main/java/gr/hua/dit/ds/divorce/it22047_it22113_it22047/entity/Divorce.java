@@ -268,4 +268,41 @@ public class Divorce implements Serializable {
         }
         return null;
     }
+
+    public DivorceStatementChoice getSpouseOneChoice() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.SPOUSE_ONE)) {
+                return divorceStatement.getChoice();
+            }
+        }
+        return null;
+    }
+
+    public DivorceStatementChoice getSpouseTwoChoice() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.SPOUSE_TWO)) {
+                return divorceStatement.getChoice();
+            }
+        }
+        return null;
+    }
+
+    public DivorceStatementChoice getLawyerTwoChoice() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.LAWYER_TWO)) {
+                return divorceStatement.getChoice();
+            }
+        }
+        return null;
+    }
+
+    public DivorceStatementChoice getNotaryChoice() {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().equals(Faculty.NOTARY)) {
+                return divorceStatement.getChoice();
+            }
+        }
+        return null;
+    }
+
 }
