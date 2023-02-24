@@ -12,7 +12,6 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStateme
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data.DivorceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -219,7 +218,7 @@ public class DivorceController {
         if (!divorce.isClosed()) {
             statement.setTimestamp(new Date(System.currentTimeMillis()));
             divorce.getStatement().add(statement);
-            if (statement.getChoice().equals(DivorceStatementChoice.REJECT)) {
+            if (statement.getChoice().equals(DivorceStatementChoice.REJECTED)) {
                 divorce.setStatus(DivorceStatus.CANCELLED);
             } else if (divorce.isAllStatementsAccepted()) {
                 divorce.setStatus(DivorceStatus.COMPLETED);

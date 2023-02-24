@@ -28,7 +28,7 @@ public class Divorce implements Serializable {
     @JoinColumn(name = "lead_lawyer_id")
     private User leadLawyer;
 
-    @Column(name = "contract_details")
+    @Column(name = "contract_details", length = 10000)
     private String contractDetails;
 
 
@@ -60,13 +60,15 @@ public class Divorce implements Serializable {
         this.applicationDate = applicationDate;
     }
 
+
+
     public Divorce() {
     }
 
 
     public boolean isAllStatementsAccepted() {
         for (DivorceStatement divorceStatement : statement) {
-            if (!divorceStatement.equals(DivorceStatementChoice.ACCEPT)) {
+            if (!divorceStatement.equals(DivorceStatementChoice.ACCEPTED)) {
                 return false;
             }
         }
@@ -111,7 +113,7 @@ public class Divorce implements Serializable {
     public boolean isReadyForNotarialAct() {
         int countAcceptStatements = 0;
         for (DivorceStatement divorceStatement : statement) {
-            if (divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPT)) {
+            if (divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPTED)) {
                 countAcceptStatements++;
             }
         }

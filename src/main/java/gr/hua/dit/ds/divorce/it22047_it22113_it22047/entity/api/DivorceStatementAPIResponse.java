@@ -8,8 +8,7 @@ import java.util.Date;
 public class DivorceStatementAPIResponse {
     private String fullName;
     private String faculty;
-    private DivorceStatementChoice statement;
+    private DivorceStatementChoice choice;
     private Date date;
     private String comment;
-
 }

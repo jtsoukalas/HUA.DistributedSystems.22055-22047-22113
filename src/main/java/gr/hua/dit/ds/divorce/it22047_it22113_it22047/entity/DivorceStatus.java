@@ -8,12 +8,14 @@ public enum DivorceStatus {
 
     private final String status;
 
-    private DivorceStatus(String status) {
+    DivorceStatus(String status) {
         this.status = status;
     }
 
     public String toHumanReadable() {
         return status;
     }
+
+
 
 }

@@ -21,7 +21,7 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
     private DivorceStatementChoice spouseTwoChoice;
     private DivorceStatementChoice notaryChoice;
 
-    private List<DivorceStatementAPIResponse> statements;
+//    private List<DivorceStatementAPIResponse> statements;
 
     public DivorceAPIResponse (Divorce divorce){
         super(divorce);
@@ -141,13 +141,13 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
         this.notaryChoice = notaryChoice;
     }
 
-    public List<DivorceStatementAPIResponse> getStatements() {
-        return statements;
-    }
-
-    public void setStatements(List<DivorceStatementAPIResponse> statements) {
-        this.statements = statements;
-    }
+//    public List<DivorceStatementAPIResponse> getStatements() {
+//        return statements;
+//    }
+//
+//    public void setStatements(List<DivorceStatementAPIResponse> statements) {
+//        this.statements = statements;
+//    }
 }
 
 

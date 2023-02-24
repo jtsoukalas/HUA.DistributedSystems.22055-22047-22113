@@ -27,7 +27,7 @@ public class DivorceStatement implements Serializable {
     @NotNull
     private Faculty faculty;
 
-    @Column(name="comment")
+    @Column(name="comment", length = 5000)
     private String comment;
 
     @Enumerated(EnumType.STRING)
