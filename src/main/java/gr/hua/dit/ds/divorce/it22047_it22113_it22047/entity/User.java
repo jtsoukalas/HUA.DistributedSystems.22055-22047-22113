@@ -1,6 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.UserAPI;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
@@ -185,5 +186,13 @@ public class User implements Serializable {
             return;
         }
         this.divorces.add(divorce);
+    }
+
+    public void update(UserAPI userAPI) {
+        this.firstName = userAPI.getFirstName();
+        this.lastName = userAPI.getLastName();
+        this.identityCardNumber = userAPI.getIdentityCardNumber();
+        this.email = userAPI.getEmail();
+        this.phoneNumber = userAPI.getPhoneNumber();
     }
 }

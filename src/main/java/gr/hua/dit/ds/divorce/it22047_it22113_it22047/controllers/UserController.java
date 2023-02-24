@@ -6,6 +6,8 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Role;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.UserStatus;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.UserAPI;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserNotFoundException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,13 +31,23 @@ public class UserController {
     @Autowired
     private UserRepository userRepo;
 
-    @GetMapping("/find")
-//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public User findByTaxNumber(Integer taxNumber) {
-        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("There is no user with tax number " + taxNumber));
-        return user; //fixme
+
+    @PostMapping("/edit")
+    public void edit (@RequestBody UserAPI userAPI) throws UserNotFoundException {
+        //Todo security check if user is admin or user himself
+        Logger.getLogger("UserController").info(userAPI.toString());
+        User user = userRepo.findByTaxNumber(userAPI.getTaxNumber()).orElseThrow(()-> new UserNotFoundException(userAPI.getTaxNumber()));
+        user.update(userAPI);
+        userRepo.save(user);
     }
 
+    @GetMapping("/find")
+//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public UserAPI findByTaxNumber(Integer taxNumber) throws UserNotFoundException {
+        //TODO security check if user has access
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UserNotFoundException(taxNumber));
+        return new UserAPI(user);
+    }
 
     @GetMapping("/findall")
 //    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -105,3 +118,4 @@ public class UserController {
         return "Invitation sent";
     }
 }
+

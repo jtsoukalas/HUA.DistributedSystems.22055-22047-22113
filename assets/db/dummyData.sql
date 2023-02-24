@@ -74,7 +74,6 @@ insert into public."user" (tax_number, email, enabled, first_name, identity_card
 INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (30, 'NOTARY');
 INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (31, 'NOTARY');
 
-
 --Divorce
 INSERT INTO public.divorce (id, application_timestamp, close_timestamp, contract_details, notarial_act_number, status,lead_lawyer_id)VALUES (1, '2022-03-06 05:39:07.000000', '2022-03-04 11:52:10.000000','platea dictumst aliquam augue quam sollicitudin vitae consectetuer eget rutrum at lorem integer tincidunt ante vel ipsum','CPDI - 8790', 'CANCELLED', 1);
 INSERT INTO public.divorce (id, application_timestamp, close_timestamp, contract_details, notarial_act_number, status,lead_lawyer_id)VALUES (2, '2022-09-25 09:09:03.000000', '2022-01-15 05:08:44.000000','dictumst morbi vestibulum velit id pretium iaculis diam erat fermentum justo nec condimentum neque sapien placerat ante nulla justo aliquam quis turpis eget elit sodales scelerisque mauris sit amet eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor','RBKV - 6208', 'DRAFT', 1);
@@ -94,8 +93,6 @@ UPDATE public.divorce SET notarial_act_number = '' WHERE id = 6;
 UPDATE public.divorce SET notarial_act_number = '' WHERE id = 1;
 UPDATE public.divorce SET notarial_act_number = '' WHERE id = 2;
 UPDATE public.divorce SET notarial_act_number = '' WHERE id = 3;
-
-
 
 --Connect lawyers to divorce cases
 INSERT INTO public.user_divorce (user_id, divorce_id)VALUES (1, 1);
@@ -154,7 +151,6 @@ insert into public."divorceStatement" (divorce_id, person_id, faculty, choice, t
 insert into public."divorceStatement" (divorce_id, person_id, faculty, choice, timestamp, comment) values (9, 2, 'LAWYER_TWO', 'OBJECTED', '10/25/2022', 'consequat morbi a ipsum integer a nibh in quis justo maecenas rhoncus aliquam lacus morbi quis tortor id nulla ultrices aliquet maecenas leo odio condimentum id luctus nec molestie sed justo pellentesque viverra pede ac diam cras pellentesque volutpat dui maecenas tristique est et tempus semper est quam pharetra magna ac consequat metus sapien ut nunc vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae mauris viverra diam vitae quam suspendisse potenti nullam porttitor lacus at turpis donec posuere metus vitae ipsum aliquam non mauris morbi non lectus aliquam sit amet diam in magna bibendum imperdiet nullam orci pede venenatis non sodales sed tincidunt eu felis fusce posuere felis sed lacus morbi sem mauris laoreet ut rhoncus aliquet pulvinar sed nisl nunc rhoncus dui vel sem sed sagittis nam congue risus semper porta volutpat quam pede lobortis ligula sit amet eleifend pede libero quis orci nullam molestie nibh in lectus pellentesque at nulla suspendisse potenti cras in purus eu magna vulputate luctus cum sociis natoque penatibus et magnis dis parturient');
 insert into public."divorceStatement" (divorce_id, person_id, faculty, choice, timestamp, comment) values (10, 3, 'LAWYER_TWO', 'OBJECTED', '4/14/2022', 'eget orci vehicula condimentum curabitur in libero ut massa volutpat convallis morbi odio odio elementum eu interdum eu tincidunt in leo maecenas pulvinar lobortis est phasellus sit amet erat nulla tempus vivamus in felis eu sapien cursus vestibulum proin eu mi nulla ac enim in tempor turpis nec euismod scelerisque quam turpis adipiscing lorem vitae mattis nibh ligula nec sem duis aliquam convallis nunc proin at turpis a pede posuere nonummy integer non velit donec diam neque vestibulum eget vulputate ut ultrices vel augue vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet lobortis sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum nulla tellus in sagittis dui vel nisl duis ac nibh fusce lacus purus aliquet at feugiat non pretium quis lectus suspendisse potenti in eleifend quam a odio in');
 
-
 --User - divorce table
 --Spouse
 insert into public.user_divorce (user_id, divorce_id) values (10, 1);
@@ -188,4 +184,3 @@ insert into public.user_divorce (user_id, divorce_id) values (30, 7);
 insert into public.user_divorce (user_id, divorce_id) values (31, 8);
 insert into public.user_divorce (user_id, divorce_id) values (31, 9);
 insert into public.user_divorce (user_id, divorce_id) values (31, 10);
-
