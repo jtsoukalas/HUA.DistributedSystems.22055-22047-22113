@@ -195,4 +195,8 @@ public class User implements Serializable {
         this.email = userAPI.getEmail();
         this.phoneNumber = userAPI.getPhoneNumber();
     }
+
+    public boolean hasRole(Role role) {
+        return this.roles.contains(role);
+    }
 }

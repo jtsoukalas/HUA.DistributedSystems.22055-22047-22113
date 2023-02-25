@@ -4,17 +4,9 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Faculty;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserWithWrongRoleException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class EmailSenderService {
@@ -37,7 +29,7 @@ public class EmailSenderService {
     public void emailParty(Divorce divorce, Faculty faculty, EmailOption emailOption){
         String toEmail = null;
         try {
-            toEmail = divorce.getUser(faculty).getEmail();
+            toEmail = divorce.getUserFromStatements(faculty).getEmail();
         } catch (UserWithWrongRoleException e) {
             return;
         }

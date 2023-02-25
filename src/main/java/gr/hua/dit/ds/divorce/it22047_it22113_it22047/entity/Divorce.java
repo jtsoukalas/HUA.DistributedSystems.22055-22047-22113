@@ -216,13 +216,22 @@ public class Divorce implements Serializable {
 //        return true;
 //    }
 
-    public User getUser(Faculty faculty) throws UserWithWrongRoleException {
+    public User getUserFromStatements(Faculty faculty) throws UserWithWrongRoleException {
         for (DivorceStatement divorceStatement : statement) {
             if (divorceStatement.getFaculty().equals(faculty)) {
                 return divorceStatement.getPerson();
             }
         }
         throw new UserWithWrongRoleException("User with role " + faculty + " is not found on divorce application");
+    }
+
+    public User getUserFromStatements(Role role) throws UserWithWrongRoleException {
+        for (DivorceStatement divorceStatement : statement) {
+            if (divorceStatement.getFaculty().getRole().equals(role)) {
+                return divorceStatement.getPerson();
+            }
+        }
+        throw new UserWithWrongRoleException("User with role " + role + " is not found on divorce application");
     }
 
     public User getNotary() {
@@ -307,4 +316,11 @@ public class Divorce implements Serializable {
         return null;
     }
 
+    public User getLeadLawyer() {
+        return leadLawyer;
+    }
+
+    public void setLeadLawyer(User leadLawyer) {
+        this.leadLawyer = leadLawyer;
+    }
 }
