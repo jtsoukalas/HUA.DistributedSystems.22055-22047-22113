@@ -6,9 +6,7 @@ import java.util.List;
 public enum Faculty {
     LAWYER_LEAD (Role.LAWYER),
     LAWYER_TWO (Role.LAWYER),
-    LAWYER (Role.LAWYER),
     NOTARY (Role.NOTARY),
-    SPOUSE (Role.SPOUSE),
     SPOUSE_TWO (Role.SPOUSE),
     SPOUSE_ONE (Role.SPOUSE);
 

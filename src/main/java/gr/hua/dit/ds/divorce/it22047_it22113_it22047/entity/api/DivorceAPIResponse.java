@@ -1,7 +1,6 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
-import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatementChoice;
 
 import java.util.Date;
 import java.util.List;
@@ -30,7 +29,7 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
             this.notarialDeedNumber = divorce.getNotarialDeedNumber();
         } catch (NullPointerException e) {
         }
-        this.statements = DivorceStatementAPIResponse.fromList(divorce.getStatement());
+        this.statements = DivorceStatementAPIResponse.fromList(divorce.getStatements());
     }
 
     public String getContractDetails() {

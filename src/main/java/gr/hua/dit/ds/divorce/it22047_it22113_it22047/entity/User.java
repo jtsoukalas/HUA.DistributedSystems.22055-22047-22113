@@ -179,13 +179,24 @@ public class User implements Serializable {
         return this.firstName + " " + this.lastName;
     }
 
-    public void addDivorce(Divorce divorce) {
+    public User addDivorce(Divorce divorce) {
         if (this.divorces== null) {
             this.divorces = new ArrayList<>();
         } else if (this.divorces.contains(divorce)) {
-            return;
+            return this;
         }
         this.divorces.add(divorce);
+        return this;
+    }
+
+    public User removeDivorce(Divorce divorce) {
+        if (this.divorces== null) {
+            return this;
+        } else if (!this.divorces.contains(divorce)) {
+            return this;
+        }
+        this.divorces.remove(divorce);
+        return this;
     }
 
     public void update(UserAPI userAPI) {

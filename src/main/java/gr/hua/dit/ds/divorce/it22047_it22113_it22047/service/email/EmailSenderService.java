@@ -8,6 +8,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EmailSenderService {
     @Autowired
@@ -24,6 +26,14 @@ public class EmailSenderService {
         message.setSubject(subject);
         mailSender.send(message);
         System.out.println("Mail Send...");
+    }
+
+    public void emailParties(Divorce divorce, EmailOption emailOption){
+        List<Faculty> faculties = Faculty.getFaculties();
+        faculties.remove(Faculty.NOTARY);
+        faculties.forEach(f->{
+            emailParty(divorce, f, emailOption);
+        });
     }
 
     public void emailParty(Divorce divorce, Faculty faculty, EmailOption emailOption){

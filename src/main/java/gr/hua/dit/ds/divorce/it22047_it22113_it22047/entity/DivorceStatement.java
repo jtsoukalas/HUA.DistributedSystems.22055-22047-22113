@@ -10,40 +10,41 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name="divorceStatement")
+@Table(name = "divorceStatement")
 public class DivorceStatement implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @OneToOne(cascade=CascadeType.PERSIST)
-    @JoinColumn(name="person_id")
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "person_id")
     private User person;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="faculty")
+    @Column(name = "faculty")
     @NotNull
     private Faculty faculty;
 
-    @Column(name="comment", length = 5000)
+    @Column(name = "comment", length = 5000)
     private String comment;
 
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name="statement_status")
-    @Column(name="choice")
+    @CollectionTable(name = "statement_status")
+    @Column(name = "choice")
     private DivorceStatementChoice choice;
 
-    @Column(name="timestamp")
+    @Column(name = "timestamp")
     private Date timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "divorce_id")
     private Divorce divorce;
 
 
-    public DivorceStatement(User user){}
+    public DivorceStatement(User user) {
+    }
 
     public DivorceStatement(Integer id, User person, Faculty faculty, String comment, DivorceStatementChoice choice, Date timestamp, Divorce divorce) {
         this.id = id;
@@ -56,15 +57,23 @@ public class DivorceStatement implements Serializable {
     }
 
     public DivorceStatement(User person, Faculty faculty, DivorceStatementChoice choice, Divorce divorce) {
-        this(person,faculty, divorce);
+        this(person, faculty, divorce);
         this.divorce = divorce;
     }
 
-    public DivorceStatement(User person, Faculty faculty, Divorce divorce){
+    public DivorceStatement(User person, Faculty faculty, Divorce divorce) {
         this.person = person;
         this.faculty = faculty;
         this.divorce = divorce;
-        this.choice = DivorceStatementChoice.PENDING;
+        if (divorce.isPublic()) {
+            if (faculty.equals(Faculty.NOTARY)) {
+                this.choice = DivorceStatementChoice.WAITING;
+            } else {
+                this.choice = DivorceStatementChoice.PENDING;
+            }
+        } else {
+            this.choice = DivorceStatementChoice.WAITING;
+        }
     }
 
     public DivorceStatement() {
@@ -86,9 +95,13 @@ public class DivorceStatement implements Serializable {
         this.person = person;
     }
 
-    public Faculty getFaculty() {return faculty;}
+    public Faculty getFaculty() {
+        return faculty;
+    }
 
-    public void setFaculty(Faculty faculty) {this.faculty = faculty;}
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
 
     public String getComment() {
         return comment;

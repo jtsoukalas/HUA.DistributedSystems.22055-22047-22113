@@ -3,6 +3,7 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatus;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Faculty;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserWithWrongRoleException;
 
 public class DivorceAPIRequest {
 
@@ -49,11 +50,12 @@ public class DivorceAPIRequest {
         this.notaryTaxNumber = notaryTaxNumber;
     }
 
-    public Integer getUserTaxNumber(Faculty faculty){
+    public Integer getUserTaxNumber(Faculty faculty) throws UserWithWrongRoleException {
         switch (faculty) {
             case LAWYER_LEAD:
-            case LAWYER_TWO:
                 return lawyerLeadTaxNumber;
+            case LAWYER_TWO:
+                return lawyerTwoTaxNumber;
             case NOTARY:
                 return notaryTaxNumber;
             case SPOUSE_ONE:
@@ -61,7 +63,7 @@ public class DivorceAPIRequest {
             case SPOUSE_TWO:
                 return spouseTwoTaxNumber;
             default:
-                return null;
+                throw new UserWithWrongRoleException("User with role " + faculty + " was not found");
         }
     }
 
@@ -69,7 +71,7 @@ public class DivorceAPIRequest {
         if(id != null && status != null && contractDetails != null && lawyerLeadTaxNumber != null && lawyerTwoTaxNumber != null && spouseOneTaxNumber != null && spouseTwoTaxNumber != null && notaryTaxNumber != null) {
             return;
         }
-        throw new IllegalArgumentException("DivorceAPIRequest is not complete");
+        throw new IllegalArgumentException("DivorceAPIRequest interface is not complete");
     }
 
     public Integer getNotaryTaxNumber() {
