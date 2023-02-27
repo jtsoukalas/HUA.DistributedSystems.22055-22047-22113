@@ -5,11 +5,14 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatus;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.UserStatus;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.persistence.FetchType;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

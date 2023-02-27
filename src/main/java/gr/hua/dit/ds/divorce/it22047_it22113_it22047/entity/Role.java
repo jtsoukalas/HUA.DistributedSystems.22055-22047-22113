@@ -1,8 +1,15 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
-public enum Role {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Role implements GrantedAuthority {
         SPOUSE,
         LAWYER,
         NOTARY,
-        ADMIN
+        ADMIN;
+
+        @Override
+        public String getAuthority() {
+                return this.name();
+        }
 }

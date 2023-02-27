@@ -13,6 +13,8 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStateme
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data.DivorceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -107,6 +109,7 @@ public class DivorceController {
                 .map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasRole('LAWYER')")
     @GetMapping("/findAll")
     public List<DivorceAPIResponseConcise> findAll() {
         List<DivorceAPIResponseConcise> response = new ArrayList<>();

@@ -2,7 +2,11 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.UserAPI;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.security.auth.RegisterRequest;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,9 +16,22 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
+
 @Entity
 @Table(name = "user")
-public class User implements Serializable {
+public class User implements UserDetails {
 
     @Id
 //    @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -79,6 +96,21 @@ public class User implements Serializable {
         this.enabled=false;
     }
 
+    public User (RegisterRequest registerRequest){
+        this.taxNumber = registerRequest.getTaxNumber();
+        this.firstName = registerRequest.getFirstName();
+        this.lastName = registerRequest.getLastName();
+        this.identityCardNumber = registerRequest.getIdentityCardNumber();
+        this.email = registerRequest.getEmail();
+        this.password = registerRequest.getPassword();
+        this.phoneNumber = registerRequest.getPhoneNumber();
+        this.roles = new ArrayList<>();
+        this.roles.add(registerRequest.getRole());
+        this.userStatus = UserStatus.PENDING_APPROVAL;
+        this.registerTimestamp = new Date();
+        this.divorces = new ArrayList<>();
+    }
+
     public User() {}
 
     public Integer getTaxNumber() {return taxNumber;}
@@ -117,8 +149,42 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    @Override
+    @Transactional
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.name()));
+        }
+        return authorities;
+//        ArrayList<Role> rt = new ArrayList<>();
+//        rt.add(Role.ADMIN);
+//        return rt;
+    }
+
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return taxNumber.toString();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.enabled;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
     public void setPassword(String password) {
@@ -133,7 +199,12 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Collection<Role> getRoles() {return roles;}
+    @Transactional
+    public Collection<Role> getRoles() {
+        ArrayList<Role> rt = new ArrayList<>();
+        rt.add(Role.ADMIN);
+        return rt;
+      } //Fixme
 
     public void setRoles(Collection<Role> roles) {this.roles = roles;}
 
@@ -153,6 +224,7 @@ public class User implements Serializable {
         this.registerTimestamp = registerTimestamp;
     }
 
+    @Transactional
     public List<Divorce> getDivorces() {
         return divorces;
     }
@@ -179,6 +251,7 @@ public class User implements Serializable {
         return this.firstName + " " + this.lastName;
     }
 
+    @Transactional
     public User addDivorce(Divorce divorce) {
         if (this.divorces== null) {
             this.divorces = new ArrayList<>();
@@ -189,6 +262,7 @@ public class User implements Serializable {
         return this;
     }
 
+    @Transactional
     public User removeDivorce(Divorce divorce) {
         if (this.divorces== null) {
             return this;
@@ -207,7 +281,9 @@ public class User implements Serializable {
         this.phoneNumber = userAPI.getPhoneNumber();
     }
 
+    @Transactional
     public boolean hasRole(Role role) {
         return this.roles.contains(role);
     }
+
 }
