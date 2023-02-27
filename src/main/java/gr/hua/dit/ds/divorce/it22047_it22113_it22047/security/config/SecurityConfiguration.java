@@ -30,7 +30,6 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/statistics/**").hasRole(Role.ADMIN.name())
                 .anyRequest()
                 .authenticated()
                 .and()

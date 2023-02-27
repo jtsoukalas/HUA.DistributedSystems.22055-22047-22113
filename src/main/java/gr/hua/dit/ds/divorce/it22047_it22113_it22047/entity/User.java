@@ -56,11 +56,9 @@ public class User implements UserDetails {
     @Column(name="phone_number")
     private String phoneNumber;
 
-    @ElementCollection(targetClass=Role.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name="user_roles")
-    @Column(name="roles")
-    private Collection<Role> roles;
+    @Column(name="role")
+    private Role role;
 
     @Column(name="user_status")
     @Enumerated(EnumType.STRING)
@@ -81,7 +79,7 @@ public class User implements UserDetails {
     @NotNull
     private boolean enabled = false;
 
-    public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Collection<Role> interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> divorces) {
+    public User(Integer taxNumber, String firstName, String lastName, String identityCardNumber, String email, String password, String phoneNumber, Role interests, UserStatus userStatus, Date registerTimestamp, List<Divorce> divorces) {
         this.taxNumber = taxNumber;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -89,7 +87,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.roles = interests;
+        this.role = interests;
         this.userStatus = userStatus;
         this.registerTimestamp = registerTimestamp;
         this.divorces = divorces;
@@ -104,8 +102,7 @@ public class User implements UserDetails {
         this.email = registerRequest.getEmail();
         this.password = registerRequest.getPassword();
         this.phoneNumber = registerRequest.getPhoneNumber();
-        this.roles = new ArrayList<>();
-        this.roles.add(registerRequest.getRole());
+        this.role = registerRequest.getRole();
         this.userStatus = UserStatus.PENDING_APPROVAL;
         this.registerTimestamp = new Date();
         this.divorces = new ArrayList<>();
@@ -152,14 +149,7 @@ public class User implements UserDetails {
     @Override
     @Transactional
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.name()));
-        }
-        return authorities;
-//        ArrayList<Role> rt = new ArrayList<>();
-//        rt.add(Role.ADMIN);
-//        return rt;
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
 
@@ -199,14 +189,11 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
     }
 
-    @Transactional
-    public Collection<Role> getRoles() {
-        ArrayList<Role> rt = new ArrayList<>();
-        rt.add(Role.ADMIN);
-        return rt;
-      } //Fixme
+    public Role getRole() {
+        return role;
+      }
 
-    public void setRoles(Collection<Role> roles) {this.roles = roles;}
+    public void setRole(Role role) {this.role = role;}
 
     public UserStatus getUserStatus() {
         return userStatus;
@@ -283,7 +270,7 @@ public class User implements UserDetails {
 
     @Transactional
     public boolean hasRole(Role role) {
-        return this.roles.contains(role);
+        return this.role.equals(role);
     }
 
 }

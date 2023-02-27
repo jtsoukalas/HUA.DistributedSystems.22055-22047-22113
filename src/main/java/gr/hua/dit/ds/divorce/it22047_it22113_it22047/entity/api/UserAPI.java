@@ -17,7 +17,7 @@ public class UserAPI {
     private String identityCardNumber;
     private String email;
     private String phoneNumber;
-    private List<String> roles;
+    private String role;
     private String userStatus;
 
     public UserAPI(){}
@@ -29,10 +29,7 @@ public class UserAPI {
         this.identityCardNumber = user.getIdentityCardNumber();
         this.email = user.getEmail();
         this.phoneNumber = user.getPhoneNumber();
-        this.roles = new ArrayList<>();
-        for (Role role : user.getRoles()) {
-            this.roles.add(role.toString());
-        }
+        this.role= user.getRole().name();
         this.userStatus = user.getUserStatus().toString();
 
     }
@@ -85,12 +82,12 @@ public class UserAPI {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getUserStatus() {

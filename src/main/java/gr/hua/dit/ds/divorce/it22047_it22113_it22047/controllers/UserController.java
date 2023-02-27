@@ -12,6 +12,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +51,8 @@ public class UserController {
     }
 
     @GetMapping("/findall")
-//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    //has authority admin
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> findAll() {
         return userRepo.findAll();
     }
@@ -107,7 +109,7 @@ public class UserController {
         newUser.setTaxNumber(taxNumber);
         newUser.setEmail(email);
         newUser.setEnabled(false);
-        newUser.setRoles(List.of(Role.SPOUSE));
+        newUser.setRole(Role.SPOUSE);
         newUser.setUserStatus(UserStatus.PENDING_REGISTRATION);
 
         userRepo.save(newUser);

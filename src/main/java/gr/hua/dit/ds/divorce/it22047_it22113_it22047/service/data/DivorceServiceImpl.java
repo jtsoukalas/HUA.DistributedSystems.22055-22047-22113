@@ -41,7 +41,7 @@ public class DivorceServiceImpl implements DivorceService {
     public User checkRole(Integer taxNumber, Faculty faculty) throws UserNotFoundException, UserWithWrongRoleException {
         User user = userRepo.findByTaxNumber(taxNumber)
                 .orElseThrow(() -> new UserNotFoundException(taxNumber));
-        if (!user.getRoles().contains(faculty.getRole())) {
+        if (!user.getRole().equals(faculty.getRole())) {
             throw new UserWithWrongRoleException(taxNumber, faculty);
         }
         return user;
