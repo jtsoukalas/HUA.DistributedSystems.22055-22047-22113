@@ -113,13 +113,15 @@ public class DivorceController {
      * Returns divorces that mach the given criteria
      *
      * @param query     divorce query
-     * @param taxNumber we might want to remove the param after security is implemented
      * @return
      */
     @GetMapping("/search")
-    public List<DivorceAPIResponseConcise> search(String query, Integer taxNumber) {
+    public List<DivorceAPIResponseConcise> search(String query) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
-                .getDivorces().stream().filter(d -> d.search(query))
+                .getDivorces().stream().filter(d -> d.search(query) && d.hasAccess(taxNumber))
                 .map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
     }
 
