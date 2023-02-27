@@ -12,6 +12,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +52,6 @@ public class UserController {
     }
 
     @GetMapping("/findall")
-    //has authority admin
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> findAll() {
         return userRepo.findAll();
@@ -77,6 +77,7 @@ public class UserController {
 
 
     @PostMapping("/disableAccess")
+    @PreAuthorize("hasAuthority('ADMIN')")
     //    @PreAuthorize("hasRole('ADMIN')")
     public void disableAccessByTaxNumber(Integer taxNumber) {
         User user = userRepo.findByTaxNumber(taxNumber)
@@ -89,6 +90,7 @@ public class UserController {
     private EmailSenderService senderService;
 
     @PostMapping("/invite")
+    @PreAuthorize("hasAuthority('LAWYER')")
     public String invite(Integer taxNumber, String email) {
         User user = userRepo.findByTaxNumber(taxNumber).orElse(null);
 

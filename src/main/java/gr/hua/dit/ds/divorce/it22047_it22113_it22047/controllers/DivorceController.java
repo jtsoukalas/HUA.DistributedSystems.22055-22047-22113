@@ -15,10 +15,13 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data.DivorceService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static javax.swing.UIManager.get;
@@ -26,6 +29,7 @@ import static javax.swing.UIManager.get;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/divorce")
+@PreAuthorize("hasAuthority('LAWYER') or hasAuthority('NOTARY') or hasAuthority('SPOUSE')")
 public class DivorceController {
 
     @Autowired
@@ -46,14 +50,14 @@ public class DivorceController {
     /**
      * Returns divorces of the user with the given tax number
      *
-     * @param taxNumber we might want to remove the param after security is implemented
      * @param role      of the user in order to filter the divorces
      * @return List of divorces
      */
     @GetMapping("/myDivorces")
-//    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE')")
-    public List<DivorceAPIResponseConcise> myDivorces(Integer taxNumber, Role role) throws UserNotFoundException, UserWithWrongRoleException {
-        // TODO Security check if the user is allowed to see the divorces
+    public List<DivorceAPIResponseConcise> myDivorces(Role role) throws UserNotFoundException, UserWithWrongRoleException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         if (taxNumber == null || role == null) {
             throw new IllegalArgumentException("TaxNumber and faculty must be provided");
         }
@@ -70,12 +74,14 @@ public class DivorceController {
                     return true;
                 }
             }).filter(d -> {
-                try {
-                    return d.getUserFromStatements(role).getTaxNumber().equals(taxNumber) ||
-                            d.getLawyerLead().getTaxNumber().equals(taxNumber);
-                } catch (UserWithWrongRoleException e) {
-                    return false;
+                if (role.equals(Role.LAWYER)){
+                    return d.getLawyerLead().getTaxNumber().equals(taxNumber);
                 }
+                    try {
+                        return d.getUserFromStatements(role).getTaxNumber().equals(taxNumber);
+                    } catch (UserWithWrongRoleException e) {
+                        return false;
+                    }
             }).map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
         } else {
             throw new UserWithWrongRoleException(taxNumber, role);
@@ -109,8 +115,8 @@ public class DivorceController {
                 .map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasRole('LAWYER')")
     @GetMapping("/findAll")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<DivorceAPIResponseConcise> findAll() {
         List<DivorceAPIResponseConcise> response = new ArrayList<>();
         divorceRepo.findAll().forEach(d -> response.add(new DivorceAPIResponseConcise(d)));
@@ -121,7 +127,7 @@ public class DivorceController {
      * Edit divorce
      */
     @PostMapping("/edit")
-//    @PreAuthorize("hasRole('LAWYER')
+    @PreAuthorize("hasAuthority('LAWYER')")
     public DivorceAPIResponse edit(@RequestBody DivorceAPIRequest divorceEdits) throws
             UserNotFoundException, UserWithWrongRoleException, FewerDivorceStatementsException, DivorceStatusException, SimilarDivorceExistsException {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
@@ -145,7 +151,7 @@ public class DivorceController {
      * @throws UserWithWrongRoleException
      */
     @PostMapping("/save")
-//    @PreAuthorize("hasRole('LAWYER')
+    @PreAuthorize("hasAuthority('LAWYER')")
     public DivorceAPIResponse save(@RequestBody DivorceAPIRequest divorce) throws
             FewerDivorceStatementsException, DivorceStatusException, UserNotFoundException, UserWithWrongRoleException, SimilarDivorceExistsException {
         //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
@@ -158,7 +164,7 @@ public class DivorceController {
      * @param id
      */
     @DeleteMapping("/delete")
-    //@PreAuthorize("hasRole('LAWYER')")
+    @PreAuthorize("hasAuthority('LAWYER')")
     public void delete(Integer id) {
         //TODO Security check if the user is allowed to delete the divorce
         //TODO Implement
@@ -166,14 +172,14 @@ public class DivorceController {
     }
 
     @PostMapping("/emailInvolvedPartis")
-    //@PreAuthorize("hasRole('LAWYER')")
+    @PreAuthorize("hasAuthority('LAWYER')")
     public void emailInvolvedPartis(Integer id) {
         //TODO Security check if the user is allowed to delete the divorce
         //TODO Implement
     }
 
     @PostMapping("/notarialAccept")
-    //@PreAuthorize("hasRole('NOTARY')")
+    @PreAuthorize("hasAuthority('NOTARY')")
     public void notarialAccept(Integer id, String notarialDeedNumber) {
         //TODO Security check if the user is allowed to delete the divorce
         //TODO Implement

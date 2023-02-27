@@ -149,7 +149,14 @@ public class User implements UserDetails {
     @Override
     @Transactional
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(Role.SPOUSE.name()));
+        switch (role){
+            case LAWYER -> authorities.add(new SimpleGrantedAuthority(Role.LAWYER.name()));
+            case NOTARY -> authorities.add(new SimpleGrantedAuthority(Role.NOTARY.name()));
+            case ADMIN -> authorities.add(new SimpleGrantedAuthority(Role.ADMIN.name()));
+        }
+        return authorities;
     }
 
 
@@ -270,7 +277,7 @@ public class User implements UserDetails {
 
     @Transactional
     public boolean hasRole(Role role) {
-        return this.role.equals(role);
+        return getAuthorities().contains(new SimpleGrantedAuthority(role.name()));
     }
 
 }
