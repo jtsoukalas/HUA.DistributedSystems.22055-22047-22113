@@ -361,4 +361,16 @@ public class Divorce implements Serializable {
     public boolean isPublic() {
         return !this.status.equals(DivorceStatus.DRAFT);
     }
+
+    public boolean hasAccess(Integer taxNumber){
+        if (leadLawyer.getTaxNumber().equals(taxNumber)){
+            return true;
+        }
+        for (DivorceStatement divorceStatement : statements) {
+            if (divorceStatement.getPerson().getTaxNumber().equals(taxNumber)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

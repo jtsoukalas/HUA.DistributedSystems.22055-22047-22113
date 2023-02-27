@@ -97,8 +97,16 @@ public class DivorceController {
      */
     @GetMapping("/findById")
     public DivorceAPIResponse findById(Integer id) throws NoSuchElementException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         //Check access to divorce
-        return new DivorceAPIResponse(divorceRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Divorce with id " + id + " not found")));
+        Divorce divorce = divorceRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Divorce with id " + id + " not found"));
+        if (divorce.hasAccess(taxNumber)) {
+            return new DivorceAPIResponse(divorce);
+        } else {
+            throw new NoSuchElementException("Divorce with id " + id + " not found or taxNumber " + taxNumber + " has no access to it");
+        }
     }
 
     /**
