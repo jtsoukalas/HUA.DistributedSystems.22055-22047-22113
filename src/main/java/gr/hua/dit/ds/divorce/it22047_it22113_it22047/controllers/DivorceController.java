@@ -31,7 +31,6 @@ import static javax.swing.UIManager.get;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/divorce")
-@PreAuthorize("hasAuthority('LAWYER') or hasAuthority('NOTARY') or hasAuthority('SPOUSE')")
 public class DivorceController {
 
     @Autowired
@@ -56,10 +55,7 @@ public class DivorceController {
      * @return List of divorces
      */
     @GetMapping("/myDivorces")
-    public List<DivorceAPIResponseConcise> myDivorces(Role role) throws UserNotFoundException, UserWithWrongRoleException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+    public List<DivorceAPIResponseConcise> myDivorces(Integer taxNumber, Role role) throws UserNotFoundException, UserWithWrongRoleException {
         if (taxNumber == null || role == null) {
             throw new IllegalArgumentException("TaxNumber and faculty must be provided");
         }
@@ -98,11 +94,7 @@ public class DivorceController {
      * @throws NoSuchElementException is id is not found
      */
     @GetMapping("/findById")
-    public DivorceAPIResponse findById(Integer id) throws NoSuchElementException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        //Check access to divorce
+    public DivorceAPIResponse findById(Integer taxNumber,Integer id) throws NoSuchElementException {
         Divorce divorce = divorceRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Divorce with id " + id + " not found"));
         if (divorce.hasAccess(taxNumber)) {
             return new DivorceAPIResponse(divorce);
@@ -118,17 +110,13 @@ public class DivorceController {
      * @return
      */
     @GetMapping("/search")
-    public List<DivorceAPIResponseConcise> search(String query) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+    public List<DivorceAPIResponseConcise> search(Integer taxNumber,String query) {
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
                 .getDivorces().stream().filter(d -> d.search(query) && d.hasAccess(taxNumber))
                 .map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
     }
 
     @GetMapping("/findAll")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<DivorceAPIResponseConcise> findAll() {
         List<DivorceAPIResponseConcise> response = new ArrayList<>();
         divorceRepo.findAll().forEach(d -> response.add(new DivorceAPIResponseConcise(d)));
@@ -139,12 +127,8 @@ public class DivorceController {
      * Edit divorce
      */
     @PostMapping("/edit")
-    @PreAuthorize("hasAuthority('LAWYER')")
-    public DivorceAPIResponse edit(@RequestBody DivorceAPIRequest divorceEdits) throws
+    public DivorceAPIResponse edit(Integer taxNumber,@RequestBody DivorceAPIRequest divorceEdits) throws
             UserNotFoundException, UserWithWrongRoleException, FewerDivorceStatementsException, DivorceStatusException, SimilarDivorceExistsException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         if (!divorceRepo.findById(divorceEdits.getId()).orElseThrow(() -> new DivorceNotFoundException(divorceEdits))
                 .getLawyerLead().getTaxNumber().equals(taxNumber)) {
             throw new NoSuchElementException("Divorce with id " + divorceEdits.getId() + " not found or taxNumber " + taxNumber + " has no access to it");
@@ -164,12 +148,8 @@ public class DivorceController {
      * @throws UserWithWrongRoleException
      */
     @PostMapping("/save")
-    @PreAuthorize("hasAuthority('LAWYER')")
-    public DivorceAPIResponse save(@RequestBody DivorceAPIRequest divorce) throws
+    public DivorceAPIResponse save(Integer taxNumber,@RequestBody DivorceAPIRequest divorce) throws
             FewerDivorceStatementsException, DivorceStatusException, UserNotFoundException, UserWithWrongRoleException, SimilarDivorceExistsException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         if(!divorce.getLawyerLeadTaxNumber().equals(taxNumber)){
             throw new IllegalArgumentException("Tax number of the lawyer lead must be the same as the tax number of the logged in user");
         }
@@ -183,39 +163,21 @@ public class DivorceController {
      */
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('LAWYER')")
-    public void delete(Integer id) throws DivorceStatusException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        Divorce divorce = divorceRepo.findById(id).orElseThrow(()-> new DivorceNotFoundException(id));
-        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)){
+    public void delete(Integer taxNumber,Integer id) throws DivorceStatusException {
+        Divorce divorce = divorceRepo.findById(id).orElseThrow(() -> new DivorceNotFoundException(id));
+        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)) {
             throw new DivorceNotFoundException(id);
         }
         divorceService.delete(divorce);
     }
 
-    @PostMapping("/notarialAccept")
-    @PreAuthorize("hasAuthority('NOTARY')")
-    public void notarialAccept(Integer id, String notarialDeedNumber) {
-        //TODO Security check if the user is allowed to delete the divorce
-        //TODO Implement
-    }
-
     @PostMapping("/addStatement")
-    public void addStatement(@RequestBody DivorceStatementAPIRequest statementAPI) throws UserNotFoundException, UserWithWrongRoleException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-
+    public void addStatement(Integer taxNumber,@RequestBody DivorceStatementAPIRequest statementAPI) throws UserNotFoundException, UserWithWrongRoleException {
         divorceService.addStatement(statementAPI, taxNumber);
     }
 
     @GetMapping("/remindParties")
-    @PreAuthorize("hasAuthority('LAWYER')")
-    public void remindParties(Integer divorceId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+    public void remindParties(Integer taxNumber,Integer divorceId){
         Divorce divorce = divorceRepo.findById(divorceId).orElseThrow(()-> new DivorceNotFoundException(divorceId));
         if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)){
             throw new DivorceNotFoundException(divorceId);

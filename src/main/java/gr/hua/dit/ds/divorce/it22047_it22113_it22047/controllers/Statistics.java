@@ -18,7 +18,6 @@ import javax.persistence.FetchType;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/statistics")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class Statistics {
     @Autowired
     private DivorceRepository divorceRepo;

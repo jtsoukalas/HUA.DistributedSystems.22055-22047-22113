@@ -37,10 +37,7 @@ public class UserController {
 
 
     @PostMapping("/edit")
-    public void edit (@RequestBody UserAPI userAPI) throws UserNotFoundException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+    public void edit (Integer taxNumber,@RequestBody UserAPI userAPI) throws UserNotFoundException {
         if(!userAPI.getTaxNumber().equals(taxNumber)){
             throw new IllegalArgumentException("You can only edit your own profile");
         }
@@ -50,25 +47,21 @@ public class UserController {
     }
 
     @GetMapping("/find")
-//    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public UserAPI findByTaxNumber(Integer taxNumber) throws UserNotFoundException {
-        //TODO security check if user has access
         User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UserNotFoundException(taxNumber));
         return new UserAPI(user);
     }
 
     @GetMapping("/findall")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> findAll() {
         return userRepo.findAll();
     }
 
-    @PostMapping("/disableAccess")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/changeAccess")
     public void disableAccessByTaxNumber(Integer taxNumber) {
         User user = userRepo.findByTaxNumber(taxNumber)
                 .orElseThrow(() -> new NoSuchElementException("User with taxNumber " + taxNumber + " not found"));
-        user.setEnabled(false);
+        user.setEnabled(!user.isEnabled());
         userRepo.save(user);
     }
 
@@ -76,7 +69,6 @@ public class UserController {
     private EmailSenderService senderService;
 
     @PostMapping("/invite")
-    @PreAuthorize("hasAuthority('LAWYER')")
     public String invite(Integer taxNumber, String email) {
         User user = userRepo.findByTaxNumber(taxNumber).orElse(null);
 
@@ -109,10 +101,7 @@ public class UserController {
     }
 
     @GetMapping("")
-    public UserAPI profile() throws UserNotFoundException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+    public UserAPI profile(Integer taxNumber) throws UserNotFoundException {
         return new UserAPI(userRepo.findByTaxNumber(taxNumber).orElseThrow(()-> new UserNotFoundException(taxNumber)));
     }
 }

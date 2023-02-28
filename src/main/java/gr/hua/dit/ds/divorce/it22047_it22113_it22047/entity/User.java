@@ -2,7 +2,6 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.UserAPI;
-import gr.hua.dit.ds.divorce.it22047_it22113_it22047.security.auth.RegisterRequest;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -92,21 +91,6 @@ public class User implements UserDetails {
         this.registerTimestamp = registerTimestamp;
         this.divorces = divorces;
         this.enabled=false;
-    }
-
-    public User (RegisterRequest registerRequest){
-        this.taxNumber = registerRequest.getTaxNumber();
-        this.firstName = registerRequest.getFirstName();
-        this.lastName = registerRequest.getLastName();
-        this.identityCardNumber = registerRequest.getIdentityCardNumber();
-        this.email = registerRequest.getEmail();
-        this.password = registerRequest.getPassword();
-        this.phoneNumber = registerRequest.getPhoneNumber();
-        this.role = registerRequest.getRole();
-        this.enabled = false;
-        this.userStatus = UserStatus.PENDING_APPROVAL;
-        this.registerTimestamp = new Date();
-        this.divorces = new ArrayList<>();
     }
 
     public User() {}
