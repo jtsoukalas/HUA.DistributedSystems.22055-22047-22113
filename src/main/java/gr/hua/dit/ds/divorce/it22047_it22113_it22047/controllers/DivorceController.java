@@ -3,6 +3,7 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.controllers;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.*;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.*;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.DivorceNotFoundException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.DivorceStatusException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.FewerDivorceStatementsException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.SimilarDivorceExistsException;
@@ -50,7 +51,7 @@ public class DivorceController {
     /**
      * Returns divorces of the user with the given tax number
      *
-     * @param role      of the user in order to filter the divorces
+     * @param role of the user in order to filter the divorces
      * @return List of divorces
      */
     @GetMapping("/myDivorces")
@@ -74,14 +75,14 @@ public class DivorceController {
                     return true;
                 }
             }).filter(d -> {
-                if (role.equals(Role.LAWYER)){
+                if (role.equals(Role.LAWYER)) {
                     return d.getLawyerLead().getTaxNumber().equals(taxNumber);
                 }
-                    try {
-                        return d.getUserFromStatements(role).getTaxNumber().equals(taxNumber);
-                    } catch (UserWithWrongRoleException e) {
-                        return false;
-                    }
+                try {
+                    return d.getUserFromStatements(role).getTaxNumber().equals(taxNumber);
+                } catch (UserWithWrongRoleException e) {
+                    return false;
+                }
             }).map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
         } else {
             throw new UserWithWrongRoleException(taxNumber, role);
@@ -112,7 +113,7 @@ public class DivorceController {
     /**
      * Returns divorces that mach the given criteria
      *
-     * @param query     divorce query
+     * @param query divorce query
      * @return
      */
     @GetMapping("/search")
@@ -140,10 +141,13 @@ public class DivorceController {
     @PreAuthorize("hasAuthority('LAWYER')")
     public DivorceAPIResponse edit(@RequestBody DivorceAPIRequest divorceEdits) throws
             UserNotFoundException, UserWithWrongRoleException, FewerDivorceStatementsException, DivorceStatusException, SimilarDivorceExistsException {
-        //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
-
-        //3. todo security check divorce status (if it is in the right stage)
-
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+        if (!divorceRepo.findById(divorceEdits.getId()).orElseThrow(() -> new DivorceNotFoundException(divorceEdits))
+                .getLawyerLead().getTaxNumber().equals(taxNumber)) {
+            throw new NoSuchElementException("Divorce with id " + divorceEdits.getId() + " not found or taxNumber " + taxNumber + " has no access to it");
+        }
         divorceEdits.completenessCheck();
         return new DivorceAPIResponse(divorceService.edit(divorceEdits));
     }

@@ -12,7 +12,7 @@ public class DivorceNotFoundException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return divorce.getId()!=null ? "Divorce (ID: "+divorce.getId()+") between " + divorce.getSpouseOneTaxNumber() + " and " + divorce.getSpouseTwoTaxNumber() + " not found" :
+        return divorce.getId()!=null ? "Divorce (ID: "+divorce.getId()+") between spouse with taxNumber:" + divorce.getSpouseOneTaxNumber() + " and spouse with taxNumber:" + divorce.getSpouseTwoTaxNumber() + " not found" :
                 "Divorce between " + divorce.getSpouseOneTaxNumber() + " and " + divorce.getSpouseTwoTaxNumber() + " not found";
     }
 }

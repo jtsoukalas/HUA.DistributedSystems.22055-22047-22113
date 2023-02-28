@@ -136,7 +136,7 @@ public class DivorceServiceImpl implements DivorceService {
             throw new DivorceStatusException("Divorce status change from " + divorce.getStatus() + " to " + divorceData.getStatus() + " is not allowed");
         }
 
-        if (divorce.getLawyerLead().getTaxNumber() != divorceData.getLawyerLeadTaxNumber()) {
+        if (!divorce.getLawyerLead().getTaxNumber().equals(divorceData.getLawyerLeadTaxNumber())) {
             throw new DivorceStatusException("Changes to lead lawyer are not allowed. To do that you need to cancel the divorce and start a new one");
         }
 
@@ -187,77 +187,12 @@ public class DivorceServiceImpl implements DivorceService {
             }
         }
 
-
-        //Check for new statements from divorceData
-        for (Faculty faculty : facultiesToCheck) {
-            Integer userTaxNumber = divorceData.getUserTaxNumber(faculty);
-            statementsToAdd.add(divorceStatementRepo.save(prepareDivorceStatement(
-                    userRepo.findByTaxNumber(userTaxNumber)
-                            .orElseThrow(() -> new UserNotFoundException(userTaxNumber)),
-                    divorce, faculty)));
-        }
-
         divorce.addAllDivorceStatement(statementsToAdd);
-
 
         divorce.removeAllDivorceStatement(statementsToRemove);
         statementsToRemove.forEach(statement -> {
             divorceStatementRepo.delete(statement);
         });
-
-
-//        for (DivorceStatement statement : divorce.getStatements()) {
-//            try {
-//                if (!statement.getPerson().getTaxNumber().equals(divorceData.getUserTaxNumber(statement.getFaculty()))) {
-//                    if (pendingToPending) {
-//                        throw new DivorceStatusException("Changes to involved parties are not allowed when divorce is pending. To do that you need to cancel the divorce and start a new one");
-//                    }
-//                    userRepo.save(statement.getPerson().removeDivorce(divorce));
-//                    divorceStatementRepo.delete(statement);
-//                    //Create new statement
-//                    divorceStatementRepo.save(prepareDivorceStatement(
-//                            userRepo.findByTaxNumber(divorceData.getUserTaxNumber(statement.getFaculty()))
-//                                    .orElseThrow(() -> {
-//                                        try {
-//                                            return new UserNotFoundException(divorceData.getUserTaxNumber(statement.getFaculty()));
-//                                        } catch (UserWithWrongRoleException e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        return null;
-//                                    })
-//                                    .addDivorce(divorce)
-//                            , divorce, statement.getFaculty()));
-//                }
-//            } catch (UserWithWrongRoleException e) {
-//                userRepo.save(statement.getPerson().removeDivorce(divorce));
-//                divorceStatementRepo.delete(statement);
-//            }
-//        }
-//
-//
-//        //Check statements by new divorce
-//        List<Faculty> faculties = Faculty.getFaculties();
-//        faculties.remove(Faculty.LAWYER_LEAD);
-//        faculties.forEach(faculty -> {
-//            Integer taxNumber;
-//            try {
-//                taxNumber = divorceData.getUserTaxNumber(faculty);
-//            } catch (UserWithWrongRoleException ignored) {
-//                return;
-//            }
-//            //Create new statement
-//            try {
-//                divorceStatementRepo.save(prepareDivorceStatement(userRepo.findByTaxNumber(taxNumber)
-//                                .orElseThrow(() -> new UserNotFoundException(taxNumber))
-//                                .addDivorce(divorce)
-//                        , divorce, faculty));
-//            } catch (UserNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (UserWithWrongRoleException e) {
-//                e.printStackTrace();
-//            }
-//        });
-
 
         if (draftToPending) {
             checkBeforePublishing(divorce);
@@ -268,7 +203,18 @@ public class DivorceServiceImpl implements DivorceService {
         divorce.setStatus(divorceData.getStatus());
         divorce.setContractDetails(divorceData.getContractDetails());
         divorce.setApplicationDate(new Date());
-        return save(divorce, true);
+        Divorce savedDivorce = save(divorce, true);
+
+        //Check for new statements from divorceData
+        for (Faculty faculty : facultiesToCheck) {
+            Integer userTaxNumber = divorceData.getUserTaxNumber(faculty);
+            statementsToAdd.add(divorceStatementRepo.save(prepareDivorceStatement(
+                    userRepo.findByTaxNumber(userTaxNumber)
+                            .orElseThrow(() -> new UserNotFoundException(userTaxNumber)),
+                    savedDivorce, faculty)));
+        }
+        divorce.addAllDivorceStatement(statementsToAdd);
+        return  save(divorce,true);
     }
 
     /**
