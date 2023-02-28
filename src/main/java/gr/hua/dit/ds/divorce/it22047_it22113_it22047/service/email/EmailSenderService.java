@@ -1,6 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.DivorceStatementChoice;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Faculty;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserWithWrongRoleException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class EmailSenderService {
         String toEmail = null;
         try {
             toEmail = divorce.getUserFromStatements(faculty).getEmail();
+            if(!divorce.getStatement(faculty).equals(DivorceStatementChoice.PENDING)){
+                return;
+            }
         } catch (UserWithWrongRoleException e) {
             return;
         }

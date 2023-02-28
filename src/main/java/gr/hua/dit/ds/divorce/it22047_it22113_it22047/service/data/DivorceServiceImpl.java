@@ -16,6 +16,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailOption;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 public class DivorceServiceImpl implements DivorceService {
@@ -194,12 +195,6 @@ public class DivorceServiceImpl implements DivorceService {
             divorceStatementRepo.delete(statement);
         });
 
-        if (draftToPending) {
-            checkBeforePublishing(divorce);
-            divorce.setContractDetails(divorceData.getContractDetails());
-            publish(divorce);
-        }
-
         divorce.setStatus(divorceData.getStatus());
         divorce.setContractDetails(divorceData.getContractDetails());
         divorce.setApplicationDate(new Date());
@@ -214,6 +209,13 @@ public class DivorceServiceImpl implements DivorceService {
                     savedDivorce, faculty)));
         }
         divorce.addAllDivorceStatement(statementsToAdd);
+
+        if (draftToPending) {
+            divorce.setContractDetails(divorceData.getContractDetails());
+            checkBeforePublishing(divorce);
+            publish(divorce);
+        }
+
         return  save(divorce,true);
     }
 
@@ -315,6 +317,36 @@ public class DivorceServiceImpl implements DivorceService {
                 statement.setChoice(DivorceStatementChoice.PENDING);
             }
         });
-        emailSenderService.emailParties(divorce, EmailOption.NEW_DIVORCE);
+        new Thread(() -> {
+            emailSenderService.emailParties(divorce, EmailOption.NEW_DIVORCE);
+        }).start();
     }
+
+    @Transactional
+    public void delete(Divorce divorce) throws DivorceStatusException {
+        if (divorce.isClosed()){
+            throw new DivorceStatusException("Divorce is already closed. Cannot delete.");
+        }
+
+        new Thread(() -> {
+            emailSenderService.emailParties(divorce, EmailOption.DIVORCE_DELETED);
+        }).start();
+
+        divorce.getStatements().forEach(statement -> {
+            User user = userRepo.findByTaxNumber(statement.getPerson().getTaxNumber())
+                    .orElse(null)
+                    .removeDivorce(divorce);
+            userRepo.save(user);
+
+        });
+
+divorceStatementRepo.deleteAllByDivorceId(divorce.getId());
+        userRepo.save(userRepo.findByTaxNumber(divorce.getLawyerLead().getTaxNumber())
+                .orElse(null)
+                .removeDivorce(divorce));
+
+        divorceRepo.delete(divorce);
+    }
+
+
 }

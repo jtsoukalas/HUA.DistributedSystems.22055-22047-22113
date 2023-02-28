@@ -102,4 +102,11 @@ public interface DivorceService {
     static Divorce checkIfDivorceExists(Divorce divorce) {
         return null;
     }
+
+    /**
+     * Deletes given divorce
+     * @param divorce
+     * @throws DivorceStatusException
+     */
+    void delete(Divorce divorce) throws DivorceStatusException;
 }

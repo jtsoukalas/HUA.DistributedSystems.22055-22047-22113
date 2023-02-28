@@ -257,6 +257,15 @@ public class Divorce implements Serializable {
         throw new UserWithWrongRoleException("User with role " + faculty + " is not found on divorce application");
     }
 
+    public DivorceStatement getStatement (Faculty faculty) throws UserWithWrongRoleException {
+        for (DivorceStatement divorceStatement : statements) {
+            if (divorceStatement.getFaculty().equals(faculty)) {
+                return divorceStatement;
+            }
+        }
+        throw new UserWithWrongRoleException("User with role " + faculty + " is not found on divorce application");
+    }
+
     public User getUserFromStatements(Role role) throws UserWithWrongRoleException {
         for (DivorceStatement divorceStatement : statements) {
             if (divorceStatement.getFaculty().getRole().equals(role)) {

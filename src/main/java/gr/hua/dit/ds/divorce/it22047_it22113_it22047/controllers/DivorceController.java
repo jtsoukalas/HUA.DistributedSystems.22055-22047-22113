@@ -182,10 +182,15 @@ public class DivorceController {
      */
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('LAWYER')")
-    public void delete(Integer id) {
-        //TODO Security check if the user is allowed to delete the divorce
-        //TODO Implement
-        divorceRepo.deleteById(id);
+    public void delete(Integer id) throws DivorceStatusException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+        Divorce divorce = divorceRepo.findById(id).orElseThrow(()-> new DivorceNotFoundException(id));
+        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)){
+            throw new DivorceNotFoundException(id);
+        }
+        divorceService.delete(divorce);
     }
 
     @PostMapping("/emailInvolvedPartis")
