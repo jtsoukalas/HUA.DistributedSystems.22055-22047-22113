@@ -18,7 +18,7 @@ public class UserAPI {
     private String email;
     private String phoneNumber;
     private String role;
-    private String userStatus;
+    private UserStatus userStatus;
 
     public UserAPI(){}
 
@@ -30,8 +30,21 @@ public class UserAPI {
         this.email = user.getEmail();
         this.phoneNumber = user.getPhoneNumber();
         this.role= user.getRole().name();
-        this.userStatus = user.getUserStatus().toString();
+        this.userStatus = user.getUserStatus();
 
+    }
+
+    public User toUser(){
+        User user = new User();
+        user.setTaxNumber(this.taxNumber);
+        user.setFirstName(this.firstName);
+        user.setLastName(this.lastName);
+        user.setIdentityCardNumber(this.identityCardNumber);
+        user.setEmail(this.email);
+        user.setPhoneNumber(this.phoneNumber);
+        user.setRole(Role.valueOf(this.role));
+        user.setUserStatus(this.userStatus);
+        return user;
     }
 
     public Integer getTaxNumber() {
@@ -90,11 +103,11 @@ public class UserAPI {
         this.role = role;
     }
 
-    public String getUserStatus() {
+    public UserStatus getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(String userStatus) {
+    public void setUserStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
     }
 }
