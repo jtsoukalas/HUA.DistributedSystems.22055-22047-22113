@@ -38,8 +38,12 @@ public class UserController {
 
     @PostMapping("/edit")
     public void edit (@RequestBody UserAPI userAPI) throws UserNotFoundException {
-        //Todo security check if user is admin or user himself
-        Logger.getLogger("UserController").info(userAPI.toString());
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+        if(!userAPI.getTaxNumber().equals(taxNumber)){
+            throw new IllegalArgumentException("You can only edit your own profile");
+        }
         User user = userRepo.findByTaxNumber(userAPI.getTaxNumber()).orElseThrow(()-> new UserNotFoundException(userAPI.getTaxNumber()));
         user.update(userAPI);
         userRepo.save(user);
@@ -59,28 +63,8 @@ public class UserController {
         return userRepo.findAll();
     }
 
-    @PostMapping("/invite/{taxNumber}/{email}")
-    public Divorce invite(@PathVariable String taxNumber, @PathVariable String email) {
-        //        fixme
-        //        Code here
-        return null;
-    }
-
-    @PostMapping("/save")
-//    @PreAuthorize("hasRole('LAWYER')")
-    public User save(@RequestBody User user) {
-        // 1. todo check if taxNumber of auth user is the same as the lead lawyer of the divorce
-
-        //2. todo check divorce status (if it is in the right stage)
-
-        // todo user cannot change taxNumber, identityNumber, fnale, lname
-        return userRepo.save(user);
-    }
-
-
     @PostMapping("/disableAccess")
     @PreAuthorize("hasAuthority('ADMIN')")
-    //    @PreAuthorize("hasRole('ADMIN')")
     public void disableAccessByTaxNumber(Integer taxNumber) {
         User user = userRepo.findByTaxNumber(taxNumber)
                 .orElseThrow(() -> new NoSuchElementException("User with taxNumber " + taxNumber + " not found"));
@@ -91,6 +75,7 @@ public class UserController {
     @Autowired
     private EmailSenderService senderService;
 
+    @CrossOrigin(origins = "http://localhost:8887")
     @PostMapping("/invite")
     @PreAuthorize("hasAuthority('LAWYER')")
     public String invite(Integer taxNumber, String email) {
