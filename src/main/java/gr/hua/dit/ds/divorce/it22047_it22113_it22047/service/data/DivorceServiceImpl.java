@@ -3,6 +3,7 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.dao.DivorceDAO;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.*;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.DivorceAPIRequest;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.DivorceStatementAPIRequest;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.DivorceNotFoundException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.DivorceStatusException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.FewerDivorceStatementsException;
@@ -346,6 +347,45 @@ divorceStatementRepo.deleteAllByDivorceId(divorce.getId());
                 .removeDivorce(divorce));
 
         divorceRepo.delete(divorce);
+    }
+
+    @Transactional
+    public Divorce addStatement(DivorceStatementAPIRequest statementAPI, Integer taxNumber) throws UserWithWrongRoleException, UserNotFoundException {
+
+        Divorce divorce = divorceRepo.findById(statementAPI.getDivorceID()).orElseThrow(()
+                -> new DivorceNotFoundException(statementAPI.getDivorceID()));
+
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UserNotFoundException(taxNumber));
+        DivorceStatement oldStatement = divorce.getStatement(statementAPI.getRole());
+        Faculty faculty = oldStatement.getFaculty();
+
+        if(!divorce.getUserFromStatements(faculty).getTaxNumber().equals(taxNumber)){
+            throw new IllegalArgumentException("User with tax number " + taxNumber + " is not allowed to add a statement to this divorce");
+        }
+
+        if (!divorce.isClosed()) {
+            DivorceStatement statement = oldStatement;
+            statement.setPerson(user);
+            statement.setChoice(statementAPI.getChoice());
+            statement.setComment(statementAPI.getComment());
+            statement.setFaculty(faculty);
+            statement.setDivorce(divorce);
+            statement.setTimestamp(new Date(System.currentTimeMillis()));
+            statement = divorceStatementRepo.save(statement);
+            divorce.getStatements().add(statement);
+            divorce.updateDivorceStatus();
+            divorce = divorceRepo.save(divorce);
+            if(divorce.isReadyForNotarialAct()){
+                emailSenderService.emailParty(divorce, Faculty.NOTARY, EmailOption.DIVORCE_READY_FOR_NOTARIAL_ACT);
+            }
+        } else {
+            if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
+                throw new IllegalStateException("Divorce is already completed");
+            } else {
+                throw new IllegalStateException("Divorce is cancelled");
+            }
+        }
+        return divorce;
     }
 
 

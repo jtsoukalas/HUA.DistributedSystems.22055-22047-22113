@@ -193,13 +193,6 @@ public class DivorceController {
         divorceService.delete(divorce);
     }
 
-    @PostMapping("/emailInvolvedPartis")
-    @PreAuthorize("hasAuthority('LAWYER')")
-    public void emailInvolvedPartis(Integer id) {
-        //TODO Security check if the user is allowed to delete the divorce
-        //TODO Implement
-    }
-
     @PostMapping("/notarialAccept")
     @PreAuthorize("hasAuthority('NOTARY')")
     public void notarialAccept(Integer id, String notarialDeedNumber) {
@@ -207,82 +200,12 @@ public class DivorceController {
         //TODO Implement
     }
 
-    @GetMapping("/adminFind")
-//        @PreAuthorize("hasRole('ADMIN')")
-    public List<Divorce> findByTaxNumber(Integer taxNumber) {
-//        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UsernameNotFoundException("User with tax number " + taxNumber + " not found"))
-//                .getCases();  //fixme security
-        return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
-                .getDivorces();
-    }
-
-    @GetMapping("/findByTaxNumber")
-//    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE')")
-    public List<Divorce> findByTaxNumber(Integer senderTaxNumber, Integer taxNumber) {
-        //1. todo security check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
-        List<Divorce> divorces = userRepo.findByTaxNumber(senderTaxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + senderTaxNumber + " not found"))
-                .getDivorces();
-
-        BiPredicate<Divorce, Integer> containsName = (d, n) -> {
-            List<DivorceStatement> divorceStatements = d.getStatements();
-            for (DivorceStatement statement : divorceStatements) {
-                if (statement.getPerson().getTaxNumber().equals(n)) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        return divorces.stream().filter(d -> containsName.test(d, taxNumber)).collect(Collectors.toList());
-    }
-
-    @GetMapping("/findByName")
-//    @PreAuthorize("hasRole('LAWYER') or hasRole('NOTARY') or hasRole('SPOUSE")
-    public List<Divorce> findByName(String name, Integer senderTaxNumber) {
-        //1. todo security check if taxNumber of auth user ,is the same as the one in the request.taxNumber or is an admin
-        List<Divorce> divorces = userRepo.findByTaxNumber(senderTaxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + senderTaxNumber + " not found"))
-                .getDivorces();
-
-        BiPredicate<Divorce, String> containsName = (d, n) -> {
-            List<DivorceStatement> divorceStatements = d.getStatements();
-            for (DivorceStatement statement : divorceStatements) {
-                if (statement.getPerson().getLastName().toLowerCase().contains(n.toLowerCase()) ||
-                        statement.getPerson().getFirstName().toLowerCase().contains(n.toLowerCase())) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        return divorces.stream().filter(d -> containsName.test(d, name)).collect(Collectors.toList());
-    }
-
     @PostMapping("/addStatement")
-    public Divorce addStatement(Integer divorceID, @RequestBody DivorceStatement statement) {
+    public void addStatement(@RequestBody DivorceStatementAPIRequest statementAPI) throws UserNotFoundException, UserWithWrongRoleException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
 
-        //1. todo security check if taxNumber of auth user is the same as the one in the statement (person)
-
-        //2. todo security check if taxNumber of the User who submits the statement is included in the divorce and the faculty is the same with the role ( lawyers given taxNumbers)
-        Divorce divorce = divorceRepo.findById(divorceID).orElseThrow(()
-                -> new NoSuchElementException("Divorce with id " + divorceID + " not found"));
-
-        if (!divorce.isClosed()) {
-            statement.setTimestamp(new Date(System.currentTimeMillis()));
-            divorce.getStatements().add(statement);
-            if (statement.getChoice().equals(DivorceStatementChoice.REJECTED)) {
-                divorce.setStatus(DivorceStatus.CANCELLED);
-            } else if (divorce.isAllStatementsAccepted()) {
-                divorce.setStatus(DivorceStatus.COMPLETED);
-            } else if (divorce.isReadyForNotarialAct()) {
-                //todo inform notary
-            }
-        } else {
-            if (divorce.getStatus().equals(DivorceStatus.COMPLETED)) {
-                throw new IllegalStateException("Divorce is already completed");
-            } else {
-                throw new IllegalStateException("Divorce is cancelled");
-            }
-        }
-        return divorce;
+        divorceService.addStatement(statementAPI, taxNumber);
     }
 }

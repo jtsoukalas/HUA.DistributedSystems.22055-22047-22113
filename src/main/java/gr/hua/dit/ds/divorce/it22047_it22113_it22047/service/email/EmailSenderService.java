@@ -59,9 +59,14 @@ public class EmailSenderService {
         } else if (emailOption.equals(EmailOption.READY_FOR_NOTARY)){
             subject = "Divorce Ready for Notary";
             body = "Your divorce is ready for notary. Please check your account.";
-        } else {
+        } else if (emailOption.equals(EmailOption.DIVORCE_DELETED)){
             subject = "Divorce Service";
             body = "You have a new message from the divorce service. Please check your account.";
+        } else if (emailOption.equals(EmailOption.DIVORCE_READY_FOR_NOTARIAL_ACT)){
+            subject = "Divorce Ready for Notarial Act";
+            body = "Your divorce is ready for notarial act. Please check your account.";
+        } else {
+            return;
         }
 
         sendSimpleEmail(toEmail, subject, body);

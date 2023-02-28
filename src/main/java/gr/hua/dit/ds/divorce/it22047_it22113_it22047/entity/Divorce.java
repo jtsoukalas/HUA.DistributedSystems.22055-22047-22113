@@ -131,10 +131,14 @@ public class Divorce implements Serializable {
 
     public boolean isReadyForNotarialAct() {
         int countAcceptStatements = 0;
-        for (DivorceStatement divorceStatement : statements) {
-            if (divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPTED)) {
-                countAcceptStatements++;
+        try{
+            for (DivorceStatement divorceStatement : statements) {
+                if (divorceStatement.getChoice().equals(DivorceStatementChoice.ACCEPTED)) {
+                    countAcceptStatements++;
+                }
             }
+        } catch (NullPointerException e){
+            return false;
         }
         return countAcceptStatements == 3;
     }
@@ -275,6 +279,57 @@ public class Divorce implements Serializable {
         throw new UserWithWrongRoleException("User with role " + role + " is not found on divorce application");
     }
 
+    public Faculty getFacultyFromStatements(Role role) throws UserWithWrongRoleException {
+        List<Faculty> searchFaculties = new ArrayList<>();
+        switch (role){
+            case SPOUSE -> {
+                searchFaculties.add(Faculty.SPOUSE_ONE);
+                searchFaculties.add(Faculty.SPOUSE_TWO);
+            }
+            case LAWYER -> {
+                searchFaculties.add(Faculty.LAWYER_TWO);
+            }
+            case NOTARY -> searchFaculties.add(Faculty.NOTARY);
+        }
+
+        for (DivorceStatement divorceStatement : statements) {
+            if (searchFaculties.contains(divorceStatement.getFaculty())) {
+                return divorceStatement.getFaculty();
+            }
+        }
+        throw new UserWithWrongRoleException("User with role " + role + " is not found on divorce application");
+    }
+
+    public DivorceStatement getStatement(Role role) throws UserWithWrongRoleException {
+        List<Faculty> searchFaculties = new ArrayList<>();
+        switch (role){
+            case SPOUSE -> {
+                searchFaculties.add(Faculty.SPOUSE_ONE);
+                searchFaculties.add(Faculty.SPOUSE_TWO);
+            }
+            case LAWYER -> {
+                searchFaculties.add(Faculty.LAWYER_TWO);
+            }
+            case NOTARY -> searchFaculties.add(Faculty.NOTARY);
+        }
+
+        for (DivorceStatement divorceStatement : statements) {
+            if (searchFaculties.contains(divorceStatement.getFaculty())) {
+                return divorceStatement;
+            }
+        }
+        throw new UserWithWrongRoleException("User with role " + role + " is not found on divorce application");
+    }
+
+    public User getUserFromStatements(Integer taxNumber) throws UserWithWrongRoleException {
+        for (DivorceStatement divorceStatement : statements) {
+            if (divorceStatement.getPerson().getTaxNumber().equals(taxNumber)) {
+                return divorceStatement.getPerson();
+            }
+        }
+        throw new UserWithWrongRoleException("User with taxNumber: "+taxNumber+" is not found on divorce application");
+    }
+
     public User getNotary() {
         for (DivorceStatement divorceStatement : statements) {
             if (divorceStatement.getFaculty().equals(Faculty.NOTARY)) {
@@ -381,5 +436,18 @@ public class Divorce implements Serializable {
             }
         }
         return false;
+    }
+
+    public void updateDivorceStatus(){
+        for (DivorceStatement statement : statements)
+            if (statement.getChoice().equals(DivorceStatementChoice.REJECTED)){
+                this.status = DivorceStatus.CANCELLED;
+               break;
+            } else if (statement.getChoice().equals(DivorceStatementChoice.PENDING) || statement.getChoice().equals(DivorceStatementChoice.REJECTED) || statement.getChoice().equals(DivorceStatementChoice.WAITING)){
+                this.status = DivorceStatus.PENDING;
+                break;
+            } else {
+                this.status = DivorceStatus.COMPLETED;
+            }
     }
 }

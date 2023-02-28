@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -120,6 +122,14 @@ public class UserController {
                 "Invitation to divorce application",
                 "Message to person with tax number: "+ taxNumber+" \nYou have been invited to a divorce application. Please register at http://localhost:3000/register");
         return "Invitation sent";
+    }
+
+    @GetMapping("")
+    public UserAPI profile() throws UserNotFoundException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+        return new UserAPI(userRepo.findByTaxNumber(taxNumber).orElseThrow(()-> new UserNotFoundException(taxNumber)));
     }
 }
 

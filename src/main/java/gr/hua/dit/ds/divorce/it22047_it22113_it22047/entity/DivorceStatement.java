@@ -139,4 +139,12 @@ public class DivorceStatement implements Serializable {
     public int hashCode() {
         return Objects.hash(getId(), getPerson(), getFaculty(), getComment(), getChoice(), getTimestamp(), divorce);
     }
+
+    public Divorce getDivorce() {
+        return divorce;
+    }
+
+    public void setDivorce(Divorce divorce) {
+        this.divorce = divorce;
+    }
 }

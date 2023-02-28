@@ -2,6 +2,7 @@ package gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data;
 
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.*;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.DivorceAPIRequest;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.DivorceStatementAPIRequest;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.DivorceStatusException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.FewerDivorceStatementsException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.divorce.SimilarDivorceExistsException;
@@ -109,4 +110,12 @@ public interface DivorceService {
      * @throws DivorceStatusException
      */
     void delete(Divorce divorce) throws DivorceStatusException;
+
+    /**
+     * Adds statement to divorce
+     * @param statementAPI
+     * @return
+     * @throws UserWithWrongRoleException
+     */
+    Divorce addStatement(DivorceStatementAPIRequest statementAPI, Integer taxNumber) throws UserWithWrongRoleException, UserNotFoundException;
 }
