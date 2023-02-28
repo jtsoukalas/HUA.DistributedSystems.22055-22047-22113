@@ -152,8 +152,6 @@ public class DivorceController {
         return new DivorceAPIResponse(divorceService.edit(divorceEdits));
     }
 
-    //FIXME Edit divorce without entering all data for related objects (divorceStatement, person, etc)
-
     /**
      * Create divorce
      *
@@ -168,7 +166,12 @@ public class DivorceController {
     @PreAuthorize("hasAuthority('LAWYER')")
     public DivorceAPIResponse save(@RequestBody DivorceAPIRequest divorce) throws
             FewerDivorceStatementsException, DivorceStatusException, UserNotFoundException, UserWithWrongRoleException, SimilarDivorceExistsException {
-        //1. todo security check if taxNumber of auth user is the same as the one in the lead lawyer
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+        if(!divorce.getLawyerLeadTaxNumber().equals(taxNumber)){
+            throw new IllegalArgumentException("Tax number of the lawyer lead must be the same as the tax number of the logged in user");
+        }
         return new DivorceAPIResponse(divorceService.create(divorce));
     }
 

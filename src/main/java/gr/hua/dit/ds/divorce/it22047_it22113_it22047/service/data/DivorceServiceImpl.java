@@ -257,10 +257,11 @@ public class DivorceServiceImpl implements DivorceService {
         User spouseOne = divorce.getSpouseOne();
         User spouseTwo = divorce.getSpouseTwo();
         return divorce.getLawyerLead().getDivorces().stream().filter(d -> {
+            try{
             if (d.checkIfUserIsSpouse(spouseOne) && d.checkIfUserIsSpouse(spouseTwo)
                     && !d.isClosed() && d.getLawyerLead().equals(divorce.getLawyerLead())) {
                 return true;
-            }
+            }}catch (Exception ignored){}
             return false;
         }).findFirst().orElse(null);
     }
