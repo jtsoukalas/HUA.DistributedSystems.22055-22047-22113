@@ -16,8 +16,12 @@ public class AuthController {
     UserRepository userRepo;
 
     @PostMapping("/login")
-    public boolean login(Integer taxNumber, String password) throws UserNotFoundException {
-        return userRepo.findByTaxNumber(taxNumber).orElseThrow(()-> new UserNotFoundException(taxNumber)).getPassword().equalsIgnoreCase(password);
+    public UserAPI login(Integer taxNumber, String password) throws UserNotFoundException {
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new UserNotFoundException(taxNumber));
+        if(!user.getPassword().equals(password)){
+            throw new IllegalArgumentException("Wrong password");
+        }
+        return new UserAPI(user);
     }
 
     @PostMapping("/register")
