@@ -16,6 +16,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailOption;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -350,7 +351,7 @@ divorceStatementRepo.deleteAllByDivorceId(divorce.getId());
     }
 
     @Transactional
-    public Divorce addStatement(DivorceStatementAPIRequest statementAPI, Integer taxNumber) throws UserWithWrongRoleException, UserNotFoundException {
+    public Divorce addStatement(@RequestBody DivorceStatementAPIRequest statementAPI, Integer taxNumber) throws UserWithWrongRoleException, UserNotFoundException {
 
         Divorce divorce = divorceRepo.findById(statementAPI.getDivorceID()).orElseThrow(()
                 -> new DivorceNotFoundException(statementAPI.getDivorceID()));
