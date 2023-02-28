@@ -176,3 +176,128 @@ insert into public.user_divorce (user_id, divorce_id) values (30, 7);
 insert into public.user_divorce (user_id, divorce_id) values (31, 8);
 insert into public.user_divorce (user_id, divorce_id) values (31, 9);
 insert into public.user_divorce (user_id, divorce_id) values (31, 10);
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 20;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 21;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 18;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 19;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 28;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 29;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 22;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 23;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 16;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 17;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 26;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 27;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 5;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 24;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 7;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 4;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 12;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 13;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 2;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 1;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 6;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 3;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 9;
+
+UPDATE public."user"
+SET role = 'NOTARY'
+WHERE tax_number = 31;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 25;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 8;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 10;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 11;
+
+UPDATE public."user"
+SET role = 'NOTARY'
+WHERE tax_number = 30;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 14;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 15;
+
