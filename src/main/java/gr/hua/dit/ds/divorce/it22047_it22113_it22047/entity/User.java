@@ -103,6 +103,7 @@ public class User implements UserDetails {
         this.password = registerRequest.getPassword();
         this.phoneNumber = registerRequest.getPhoneNumber();
         this.role = registerRequest.getRole();
+        this.enabled = false;
         this.userStatus = UserStatus.PENDING_APPROVAL;
         this.registerTimestamp = new Date();
         this.divorces = new ArrayList<>();

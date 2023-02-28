@@ -31,7 +31,7 @@ public class EmailSenderService {
 
     public void emailParties(Divorce divorce, EmailOption emailOption){
         List<Faculty> faculties = Faculty.getFaculties();
-        faculties.remove(Faculty.NOTARY);
+        faculties.remove(Faculty.LAWYER_LEAD);
         faculties.forEach(f->{
             emailParty(divorce, f, emailOption);
         });

@@ -75,7 +75,6 @@ public class UserController {
     @Autowired
     private EmailSenderService senderService;
 
-    @CrossOrigin(origins = "http://localhost:8887")
     @PostMapping("/invite")
     @PreAuthorize("hasAuthority('LAWYER')")
     public String invite(Integer taxNumber, String email) {

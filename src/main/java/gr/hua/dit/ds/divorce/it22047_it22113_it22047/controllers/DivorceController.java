@@ -13,6 +13,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceReposit
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.DivorceStatementRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.service.data.DivorceService;
+import org.apache.naming.factory.SendMailFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -207,5 +208,18 @@ public class DivorceController {
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
 
         divorceService.addStatement(statementAPI, taxNumber);
+    }
+
+    @GetMapping("/remindParties")
+    @PreAuthorize("hasAuthority('LAWYER')")
+    public void remindParties(Integer divorceId){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer taxNumber = Integer.valueOf(userDetails.getUsername());
+        Divorce divorce = divorceRepo.findById(divorceId).orElseThrow(()-> new DivorceNotFoundException(divorceId));
+        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)){
+            throw new DivorceNotFoundException(divorceId);
+        }
+        divorceService.remindParties(divorce);
     }
 }

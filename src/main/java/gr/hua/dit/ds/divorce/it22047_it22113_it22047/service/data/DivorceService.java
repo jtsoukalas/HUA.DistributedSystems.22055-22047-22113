@@ -118,4 +118,10 @@ public interface DivorceService {
      * @throws UserWithWrongRoleException
      */
     Divorce addStatement(DivorceStatementAPIRequest statementAPI, Integer taxNumber) throws UserWithWrongRoleException, UserNotFoundException;
+
+    /**
+     * Sends a reminder to the involved parties
+     * @param divorce
+     */
+    void remindParties(Divorce divorce);
 }

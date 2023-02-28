@@ -388,5 +388,10 @@ divorceStatementRepo.deleteAllByDivorceId(divorce.getId());
         return divorce;
     }
 
+    public void remindParties(Divorce divorce) {
+        new Thread(() -> {
+            emailSenderService.emailParties(divorce, EmailOption.REMINDER);
+        }).start();
+    }
 
 }
