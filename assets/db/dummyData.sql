@@ -14,15 +14,43 @@ insert into public."user" (tax_number, email, enabled, first_name, identity_card
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('7', 'lroskam7@xinhuanet.com', true, 'Lise', 'RB405155', 'Roskam', 'pMYpW3b7', '5371615211', '2021-11-08 07:33:00', 'ENABLED');
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('8', 'jcohan8@microsoft.com', true, 'Junie', 'XB166318', 'Cohan', 'hYA0Ga', '6883542267', '2022-02-27 02:34:06', 'PENDING_APPROVAL');
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('9', 'aharpura@cdbaby.com', true, 'Ameline', 'TF159217', 'Harpur', 'RaNI9DC0C', '2384469776', '2022-10-17 21:12:49', 'DISABLED');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (1, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (2, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (3, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (4, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (5, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (6, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (7, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (8, 'LAWYER');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (9, 'LAWYER');
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 3;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 9;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 5;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 7;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 4;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 8;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 2;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 1;
+
+UPDATE public."user"
+SET role = 'LAWYER'
+WHERE tax_number = 6;
+
+
 
 
 --Spouses
@@ -47,32 +75,121 @@ insert into public."user" (tax_number, email, enabled, first_name, identity_card
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('28', 'mlimberth@archive.org', true, 'Merwin', 'FT201317', 'Limbert', '88c6zEo', '1458962274', '2022-09-09 21:29:14', 'ENABLED');
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('29', 'mjemmetti@newsvine.com', true, 'Merwyn', 'EK950202', 'Jemmett', 'mNEjpCOIV', '1385931056', '2022-03-12 14:36:55', 'ENABLED');
 
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (10, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (11, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (12, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (13, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (14, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (15, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (16, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (17, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (18, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (19, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (20, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (21, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (22, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (23, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (24, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (25, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (26, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (27, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (28, 'SPOUSE');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (29, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (10, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (11, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (12, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (13, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (14, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (15, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (16, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (17, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (18, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (19, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (20, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (21, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (22, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (23, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (24, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (25, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (26, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (27, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (28, 'SPOUSE');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (29, 'SPOUSE');
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 12;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 13;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 28;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 20;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 21;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 10;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 11;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 18;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 14;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 15;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 29;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 22;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 23;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 16;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 17;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 26;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 27;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 19;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 24;
+
+UPDATE public."user"
+SET role = 'SPOUSE'
+WHERE tax_number = 25;
+
+
 
 --Notaries
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('30', 'hhuishb@xing.com', true, 'Helenelizabeth', 'KK161286', 'Huish', 'QBIFJIcniL', '7432731931', '2022-03-02 07:28:00', 'ENABLED');
 insert into public."user" (tax_number, email, enabled, first_name, identity_card_number, last_name, password, phone_number, register_timestamp, user_status) values ('31', 'bcancellor7@t-online.de', true, 'Barde', 'MI214899', 'Cancellor', 'F8BT7SS', '9737435205', '2022-02-15 12:42:50', 'ENABLED');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (30, 'NOTARY');
-INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (31, 'NOTARY');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (30, 'NOTARY');
+-- INSERT INTO public.user_roles ("User_tax_number", roles)VALUES (31, 'NOTARY');
+UPDATE public."user"
+SET role = 'NOTARY'
+WHERE tax_number = 30;
+
+UPDATE public."user"
+SET role = 'NOTARY'
+WHERE tax_number = 31;
+
 
 --Divorce
 INSERT INTO public.divorce (id, application_timestamp, close_timestamp, contract_details, status,lead_lawyer_id)VALUES (1, '2021-08-13 18:53:19', '2021-08-13 18:53:19','platea dictumst aliquam augue quam sollicitudin vitae consectetuer eget rutrum at lorem integer tincidunt ante vel ipsum', 'CANCELLED', 1);
@@ -176,3 +293,7 @@ insert into public.user_divorce (user_id, divorce_id) values (30, 7);
 insert into public.user_divorce (user_id, divorce_id) values (31, 8);
 insert into public.user_divorce (user_id, divorce_id) values (31, 9);
 insert into public.user_divorce (user_id, divorce_id) values (31, 10);
+
+--Password updates
+UPDATE public."user"
+SET password = '$2a$10$ZhPV2rX.B8Y91XE92ZmfNeosKtIlk4w6AvRmzcMY2tkPmGhVCn7oi'
