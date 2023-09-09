@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 
 import static javax.swing.UIManager.get;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/divorce")
 @PreAuthorize("hasAuthority('LAWYER') or hasAuthority('NOTARY') or hasAuthority('SPOUSE')")

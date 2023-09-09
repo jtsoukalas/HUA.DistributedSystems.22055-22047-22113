@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.FetchType;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/statistics")
 @PreAuthorize("hasAuthority('ADMIN')")
+@CrossOrigin(origins = "http://localhost:3000")
 public class Statistics {
     @Autowired
     private DivorceRepository divorceRepo;
