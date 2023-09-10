@@ -87,7 +87,6 @@ public class UserController {
     private EmailSenderService senderService;
 
     @PostMapping("/invite")
-    @PreAuthorize("hasAuthority('LAWYER')")
     public String invite(Integer taxNumber, String email) {
         User user = userRepo.findByTaxNumber(taxNumber).orElse(null);
 

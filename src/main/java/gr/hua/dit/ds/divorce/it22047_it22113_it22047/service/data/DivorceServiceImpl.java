@@ -230,7 +230,7 @@ public class DivorceServiceImpl implements DivorceService {
     }
 
     /**
-     * Save divorce to db. Does not check for similar divorce.
+     * Save divorce to db
      *
      * @param divorceData divorce to save
      */

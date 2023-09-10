@@ -111,7 +111,7 @@ public class DivorceController {
         } else {
             throw new NoSuchElementException("Divorce with id " + id + " not found or taxNumber " + taxNumber + " has no access to it");
         }
-        
+
     }
 
     /**
@@ -173,9 +173,7 @@ public class DivorceController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        if (!divorce.getLawyerLeadTaxNumber().equals(taxNumber)) {
-            throw new IllegalArgumentException("Tax number of the lawyer lead must be the same as the tax number of the logged in user");
-        }
+        divorce.setLawyerLeadTaxNumber(taxNumber);
         return new DivorceAPIResponse(divorceService.create(divorce));
     }
 
