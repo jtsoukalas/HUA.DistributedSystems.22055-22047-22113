@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,7 +48,7 @@ public class UserController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        if(!userAPI.getTaxNumber().equals(taxNumber) && !userDetails.getAuthorities().contains(Role.ADMIN)){
+        if(!userAPI.getTaxNumber().equals(taxNumber) && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.name()))){
             throw new IllegalArgumentException("Since you are not an ADMIN, you can only edit your own profile");
         }
         User user = userRepo.findByTaxNumber(userAPI.getTaxNumber()).orElseThrow(()-> new UserNotFoundException(userAPI.getTaxNumber()));
