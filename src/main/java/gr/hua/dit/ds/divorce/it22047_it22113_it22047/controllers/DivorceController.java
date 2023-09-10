@@ -85,7 +85,7 @@ public class DivorceController {
                 } catch (UserWithWrongRoleException e) {
                     return false;
                 }
-            }).map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
+            }).map(d -> new DivorceAPIResponseConcise(d, taxNumber)).collect(Collectors.toList());
         } else {
             throw new UserWithWrongRoleException(taxNumber, role);
         }
@@ -127,14 +127,14 @@ public class DivorceController {
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         return userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"))
                 .getDivorces().stream().filter(d -> d.search(query) && d.hasAccess(taxNumber))
-                .map(d -> new DivorceAPIResponseConcise(d)).collect(Collectors.toList());
+                .map(d -> new DivorceAPIResponseConcise(d,taxNumber)).collect(Collectors.toList());
     }
 
     @GetMapping("/findAll")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<DivorceAPIResponseConcise> findAll() {
         List<DivorceAPIResponseConcise> response = new ArrayList<>();
-        divorceRepo.findAll().forEach(d -> response.add(new DivorceAPIResponseConcise(d)));
+        divorceRepo.findAll().forEach(d -> response.add(new DivorceAPIResponseConcise(d,null)));
         return response;
     }
 

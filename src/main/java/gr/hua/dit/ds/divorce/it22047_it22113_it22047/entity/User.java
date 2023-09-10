@@ -1,6 +1,7 @@
 package gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.EditUserAPI;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.UserAPI;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.security.auth.RegisterRequest;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -92,6 +93,13 @@ public class User implements UserDetails {
         this.registerTimestamp = registerTimestamp;
         this.divorces = divorces;
         this.enabled=false;
+    }
+
+    public User (EditUserAPI user){
+        this.taxNumber = user.getTaxNumber();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.phoneNumber = user.getPhoneNumber();
     }
 
     public User (RegisterRequest registerRequest){
@@ -268,12 +276,10 @@ public class User implements UserDetails {
         return this;
     }
 
-    public void update(UserAPI userAPI) {
-        this.firstName = userAPI.getFirstName();
-        this.lastName = userAPI.getLastName();
-        this.identityCardNumber = userAPI.getIdentityCardNumber();
-        this.email = userAPI.getEmail();
-        this.phoneNumber = userAPI.getPhoneNumber();
+    public void update(EditUserAPI EditUserAPI) {
+        this.email = EditUserAPI.getEmail();
+        this.password = EditUserAPI.getPassword();
+        this.phoneNumber = EditUserAPI.getPhoneNumber();
     }
 
     @Transactional

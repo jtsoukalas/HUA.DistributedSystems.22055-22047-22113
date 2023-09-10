@@ -18,7 +18,7 @@ public class DivorceAPIResponse extends DivorceAPIResponseConcise {
 //    private List<DivorceStatementAPIResponse> statements;
 
     public DivorceAPIResponse (Divorce divorce){
-        super(divorce);
+        super(divorce,null);
         this.contractDetails = divorce.getContractDetails();
         this.date = divorce.getApplicationDate();
         try {

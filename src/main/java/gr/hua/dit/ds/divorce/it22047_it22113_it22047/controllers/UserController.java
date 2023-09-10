@@ -6,6 +6,7 @@ import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Divorce;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.Role;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.User;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.UserStatus;
+import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.EditUserAPI;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.entity.api.UserAPI;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.exceptions.user.UserNotFoundException;
 import gr.hua.dit.ds.divorce.it22047_it22113_it22047.repositories.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,16 +38,20 @@ public class UserController {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @PostMapping("/edit")
-    public void edit (@RequestBody UserAPI userAPI) throws UserNotFoundException {
+    public void edit (@RequestBody EditUserAPI userAPI) throws UserNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        if(!userAPI.getTaxNumber().equals(taxNumber)){
-            throw new IllegalArgumentException("You can only edit your own profile");
+        if(!userAPI.getTaxNumber().equals(taxNumber) && !userDetails.getAuthorities().contains(Role.ADMIN)){
+            throw new IllegalArgumentException("Since you are not an ADMIN, you can only edit your own profile");
         }
         User user = userRepo.findByTaxNumber(userAPI.getTaxNumber()).orElseThrow(()-> new UserNotFoundException(userAPI.getTaxNumber()));
+        userAPI.setPassword(passwordEncoder.encode(userAPI.getPassword()));
         user.update(userAPI);
         userRepo.save(user);
     }
