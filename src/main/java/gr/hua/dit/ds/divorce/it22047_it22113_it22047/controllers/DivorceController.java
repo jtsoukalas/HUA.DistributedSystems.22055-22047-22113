@@ -105,11 +105,13 @@ public class DivorceController {
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
         //Check access to divorce
         Divorce divorce = divorceRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Divorce with id " + id + " not found"));
-        if (divorce.hasAccess(taxNumber)) {
+        User user = userRepo.findByTaxNumber(taxNumber).orElseThrow(() -> new NoSuchElementException("User with tax number " + taxNumber + " not found"));
+        if (user.hasRole(Role.ADMIN) || divorce.hasAccess(taxNumber)) {
             return new DivorceAPIResponse(divorce);
         } else {
             throw new NoSuchElementException("Divorce with id " + id + " not found or taxNumber " + taxNumber + " has no access to it");
         }
+        
     }
 
     /**
@@ -171,7 +173,7 @@ public class DivorceController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        if(!divorce.getLawyerLeadTaxNumber().equals(taxNumber)){
+        if (!divorce.getLawyerLeadTaxNumber().equals(taxNumber)) {
             throw new IllegalArgumentException("Tax number of the lawyer lead must be the same as the tax number of the logged in user");
         }
         return new DivorceAPIResponse(divorceService.create(divorce));
@@ -188,8 +190,8 @@ public class DivorceController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        Divorce divorce = divorceRepo.findById(id).orElseThrow(()-> new DivorceNotFoundException(id));
-        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)){
+        Divorce divorce = divorceRepo.findById(id).orElseThrow(() -> new DivorceNotFoundException(id));
+        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)) {
             throw new DivorceNotFoundException(id);
         }
         divorceService.delete(divorce);
@@ -213,12 +215,12 @@ public class DivorceController {
 
     @GetMapping("/remindParties")
     @PreAuthorize("hasAuthority('LAWYER')")
-    public void remindParties(Integer divorceId){
+    public void remindParties(Integer divorceId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer taxNumber = Integer.valueOf(userDetails.getUsername());
-        Divorce divorce = divorceRepo.findById(divorceId).orElseThrow(()-> new DivorceNotFoundException(divorceId));
-        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)){
+        Divorce divorce = divorceRepo.findById(divorceId).orElseThrow(() -> new DivorceNotFoundException(divorceId));
+        if (!divorce.getLawyerLead().getTaxNumber().equals(taxNumber)) {
             throw new DivorceNotFoundException(divorceId);
         }
         divorceService.remindParties(divorce);
