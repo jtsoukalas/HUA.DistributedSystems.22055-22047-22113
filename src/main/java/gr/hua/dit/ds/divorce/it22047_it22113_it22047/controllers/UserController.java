@@ -70,6 +70,16 @@ public class UserController {
         User user = userRepo.findByTaxNumber(taxNumber)
                 .orElseThrow(() -> new NoSuchElementException("User with taxNumber " + taxNumber + " not found"));
         user.setEnabled(false);
+        user.setUserStatus(UserStatus.DISABLED);
+        userRepo.save(user);
+    }
+    @PostMapping("/enableAccess")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void enableAccessByTaxNumber(Integer taxNumber) {
+        User user = userRepo.findByTaxNumber(taxNumber)
+                .orElseThrow(() -> new NoSuchElementException("User with taxNumber " + taxNumber + " not found"));
+        user.setEnabled(true);
+        user.setUserStatus(UserStatus.ENABLED);
         userRepo.save(user);
     }
 
