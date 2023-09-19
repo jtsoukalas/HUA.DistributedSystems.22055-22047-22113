@@ -161,9 +161,28 @@ public class User implements UserDetails {
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(Role.SPOUSE.name()));
         switch (role){
-            case LAWYER -> authorities.add(new SimpleGrantedAuthority(Role.LAWYER.name()));
-            case NOTARY -> authorities.add(new SimpleGrantedAuthority(Role.NOTARY.name()));
-            case ADMIN -> authorities.add(new SimpleGrantedAuthority(Role.ADMIN.name()));
+            case LAWYER :
+                authorities.add(new SimpleGrantedAuthority(Role.LAWYER.name()));
+                break;
+            case NOTARY :
+                authorities.add(new SimpleGrantedAuthority(Role.NOTARY.name()));
+                break;
+            case ADMIN :
+                authorities.add(new SimpleGrantedAuthority(Role.ADMIN.name()));
+                break;
+            case SPOUSE_ADMIN :
+                authorities.add(new SimpleGrantedAuthority(Role.SPOUSE.name()));
+                authorities.add(new SimpleGrantedAuthority(Role.ADMIN.name()));
+                break;
+            case SPOUSE_LAWYER :
+                authorities.add(new SimpleGrantedAuthority(Role.SPOUSE.name()));
+                authorities.add(new SimpleGrantedAuthority(Role.LAWYER.name()));
+                break;
+            case SPOUSE_NOTARY :
+                authorities.add(new SimpleGrantedAuthority(Role.SPOUSE.name()));
+                authorities.add(new SimpleGrantedAuthority(Role.NOTARY.name()));
+                break;
+
         }
         return authorities;
     }

@@ -16,19 +16,19 @@ public enum Role implements GrantedAuthority {
         public String getAuthority() {
                 switch (this) {
                         case SPOUSE:
-                                return "ROLE_SPOUSE";
+                                return "SPOUSE";
                         case LAWYER:
-                                return "ROLE_LAWYER";
+                                return "LAWYER";
                         case NOTARY:
-                                return "ROLE_NOTARY";
+                                return "NOTARY";
                         case ADMIN:
-                                return "ROLE_ADMIN";
+                                return "ADMIN";
                         case SPOUSE_ADMIN:
-                                return "ROLE_SPOUSE_ADMIN";
+                                return "SPOUSE_ADMIN";
                         case SPOUSE_LAWYER:
-                                return "ROLE_SPOUSE_LAWYER";
+                                return "SPOUSE_LAWYER";
                         case SPOUSE_NOTARY:
-                                return "ROLE_SPOUSE_NOTARY";
+                                return "SPOUSE_NOTARY";
                 }
                 return null;
         }
