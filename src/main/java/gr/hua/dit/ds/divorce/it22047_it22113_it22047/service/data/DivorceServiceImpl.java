@@ -359,9 +359,9 @@ divorceStatementRepo.deleteAllByDivorceId(divorce.getId());
         DivorceStatement oldStatement = divorce.getStatement(statementAPI.getRole());
         Faculty faculty = oldStatement.getFaculty();
 
-        if(!divorce.getUserFromStatements(faculty).getTaxNumber().equals(taxNumber)){
-            throw new IllegalArgumentException("User with tax number " + taxNumber + " is not allowed to add a statement to this divorce");
-        }
+//        if(!divorce.getUserFromStatements(faculty).getTaxNumber().equals(taxNumber)){
+//            throw new IllegalArgumentException("User with tax number " + taxNumber + " is not allowed to add a statement to this divorce");
+//        }
 
         if (!divorce.isClosed()) {
             DivorceStatement statement = oldStatement;
