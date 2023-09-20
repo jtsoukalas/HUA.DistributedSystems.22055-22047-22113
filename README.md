@@ -4,6 +4,8 @@
 
 Project for Distributed Systems class (5th sem). Professors: [Anargyros Tsadimas](https://github.com/tsadimas), Mara Nikolaidou
 
+## Front-end repository
+https://github.com/Kokkales/HUA.DistributedSystems.22055-22047-22113-Frontend
 
 ## Team
 
