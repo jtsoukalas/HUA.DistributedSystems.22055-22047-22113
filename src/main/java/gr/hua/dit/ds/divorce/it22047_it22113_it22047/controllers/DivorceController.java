@@ -77,11 +77,17 @@ public class DivorceController {
                     return true;
                 }
             }).filter(d -> {
-                if (role.equals(Role.LAWYER)) {
-                    return d.getLawyerLead().getTaxNumber().equals(taxNumber);
-                }
+//                if (role.equals(Role.LAWYER)) {
+//                    return d.getLawyerLead().getTaxNumber().equals(taxNumber);
+//                }
                 try {
-                    return d.getUserFromStatements(role).getTaxNumber().equals(taxNumber);
+                    List<User> users = d.getUserFromStatements(role);
+                    for (User u : users) {
+                        if (u.getTaxNumber().equals(taxNumber)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 } catch (UserWithWrongRoleException e) {
                     return false;
                 }
